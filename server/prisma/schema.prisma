@@ -1,0 +1,744 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  admin
+  officer
+  staff
+  citizen
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum CitizenStatus {
+  Active
+  Inactive
+  Suspended
+}
+
+enum StaffStatus {
+  Active
+  On_Leave
+  Inactive
+}
+
+enum ComplaintCategory {
+  Sanitation
+  Road_Repair
+  Water_Supply
+  Street_Lighting
+  Waste_Management
+  Health_Services
+  Education
+  Security
+  Other
+}
+
+enum ComplaintPriority {
+  Low
+  Medium
+  High
+  Urgent
+}
+
+enum ComplaintStatus {
+  Open
+  Assigned
+  In_Progress
+  Resolved
+  Closed
+}
+
+enum ProjectCategory {
+  Roads_Transport
+  Water_Sanitation
+  Health_Services
+  Education_Support
+  Public_Markets
+  Street_Lighting
+  Drainage_Flood_Control
+  Community_Facilities
+}
+
+enum ProjectPriority {
+  Low
+  Medium
+  High
+  Critical
+}
+
+enum ProjectStatus {
+  Planning
+  Approved
+  Ongoing
+  Delayed
+  Completed
+  Cancelled
+}
+
+enum MilestoneStatus {
+  Pending
+  Ongoing
+  Completed
+  Delayed
+  Cancelled
+  On_Track
+}
+
+enum BudgetUpdateType {
+  utilized
+  returned
+  allocated
+}
+
+enum MeetingType {
+  Ward_Development_Committee
+  Public_Baraza
+  Budget_Review
+  Planning_Session
+  Town_Hall
+  Project_Steering_Committee
+  Health_Sanitation_Forum
+  Education_Committee
+  Security_Committee
+  Water_Environment_Committee
+}
+
+enum MeetingPriority {
+  Low
+  Medium
+  High
+  Urgent
+}
+
+enum MeetingStatus {
+  Scheduled
+  In_Progress
+  Completed
+  Postponed
+  Cancelled
+}
+
+enum ActionItemStatus {
+  Pending
+  In_Progress
+  Completed
+  Overdue
+}
+
+enum ReportType {
+  Citizens
+  Complaints
+  Projects
+  Meetings
+  Budget
+  Staff
+  Custom
+}
+
+enum ReportFormat {
+  PDF
+  Excel
+  CSV
+  HTML
+}
+
+// ============================================================
+// 1. CORE TABLES
+// ============================================================
+
+model User {
+  id             BigInt    @id @default(autoincrement())
+  fullName       String    @map("full_name") @db.VarChar(255)
+  username       String    @unique @map("username") @db.VarChar(100)
+  passwordHash   String    @map("password_hash") @db.VarChar(255)
+  role           UserRole  @default(citizen)
+  ward           String?   @db.VarChar(100)
+  email          String?   @db.VarChar(255)
+  phoneNumber    String?   @map("phone_number") @db.VarChar(20)
+  isActive       Boolean   @default(true) @map("is_active")
+  lastLoginAt    DateTime? @map("last_login_at") @db.DateTime(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.DateTime(6)
+
+  citizens       Citizen?
+  staffMembers   Staff?
+  reports        Report[]
+
+  @@index([role], map: "idx_users_role")
+  @@index([ward], map: "idx_users_ward")
+  @@map("users")
+}
+
+model Village {
+  id          BigInt   @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  ward        String   @db.VarChar(100)
+  subLocation String?  @map("sub_location") @db.VarChar(100)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@unique([name, ward], map: "uq_villages_name_ward")
+  @@map("villages")
+}
+
+model Citizen {
+  id               BigInt        @id @default(autoincrement())
+  nationalId       String        @unique @map("national_id") @db.VarChar(50)
+  firstName        String        @map("first_name") @db.VarChar(100)
+  lastName         String        @map("last_name") @db.VarChar(100)
+  gender           Gender
+  dateOfBirth      DateTime      @map("date_of_birth") @db.Date
+  phoneNumber      String        @map("phone_number") @db.VarChar(20)
+  email            String?       @db.VarChar(255)
+  occupation       String?       @db.VarChar(100)
+  village          String        @db.VarChar(100)
+  subLocation      String?       @map("sub_location") @db.VarChar(100)
+  ward             String        @db.VarChar(100)
+  physicalAddress  String?       @map("physical_address") @db.VarChar(255)
+  emergencyContact String?       @map("emergency_contact") @db.VarChar(20)
+  photoUrl         String?       @map("photo_url") @db.VarChar(500)
+  status           CitizenStatus @default(Active)
+  registrationDate DateTime      @map("registration_date") @db.Date
+  userId           BigInt?       @unique @map("user_id")
+  createdAt        DateTime      @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.DateTime(6)
+
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  complaints    Complaint[]
+
+  @@index([village], map: "idx_citizens_village")
+  @@index([ward], map: "idx_citizens_ward")
+  @@index([status], map: "idx_citizens_status")
+  @@index([lastName, firstName], map: "idx_citizens_name")
+  @@map("citizens")
+}
+
+model Staff {
+  id             BigInt      @id @default(autoincrement())
+  userId         BigInt?     @unique @map("user_id")
+  employeeNo     String      @unique @map("employee_no") @db.VarChar(50)
+  firstName      String      @map("first_name") @db.VarChar(100)
+  lastName       String      @map("last_name") @db.VarChar(100)
+  title          String?     @db.VarChar(100)
+  department     String?     @db.VarChar(100)
+  role           String?     @db.VarChar(100)
+  phoneNumber    String?     @map("phone_number") @db.VarChar(20)
+  email          String?     @db.VarChar(255)
+  ward           String?     @db.VarChar(100)
+  employmentDate DateTime?   @map("employment_date") @db.Date
+  status         StaffStatus @default(Active)
+  createdAt      DateTime    @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.DateTime(6)
+
+  user             User?               @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  assignedComplaints Complaint[]       @relation("ComplaintOfficer")
+  contractorProjects Project[]         @relation("ProjectContractor")
+  managerProjects   Project[]          @relation("ProjectManager")
+
+  @@index([department], map: "idx_staff_department")
+  @@index([status], map: "idx_staff_status")
+  @@map("staff")
+}
+
+// ============================================================
+// 2. COMPLAINTS MODULE
+// ============================================================
+
+model Complaint {
+  id                 BigInt           @id @default(autoincrement())
+  complaintCode      String           @unique @map("complaint_code") @db.VarChar(30)
+  citizenId          BigInt?          @map("citizen_id")
+  citizenName        String           @map("citizen_name") @db.VarChar(200)
+  nationalId         String?          @map("national_id") @db.VarChar(50)
+  phoneNumber        String?          @map("phone_number") @db.VarChar(20)
+  category           ComplaintCategory
+  priority           ComplaintPriority @default(Medium)
+  status             ComplaintStatus  @default(Open)
+  village            String           @db.VarChar(100)
+  assignedOfficerId  BigInt?          @map("assigned_officer_id")
+  description        String           @db.Text
+  officerNotes       String?          @map("officer_notes") @db.Text
+  resolutionNotes    String?          @map("resolution_notes") @db.Text
+  dateReported       DateTime         @map("date_reported") @db.Date
+  lastUpdated        DateTime         @map("last_updated") @db.Date
+  resolvedAt         DateTime?        @map("resolved_at") @db.DateTime(6)
+  createdAt          DateTime         @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt          DateTime         @updatedAt @map("updated_at") @db.DateTime(6)
+
+  citizen          Citizen?               @relation(fields: [citizenId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  assignedOfficer  Staff?                 @relation("ComplaintOfficer", fields: [assignedOfficerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  communications   ComplaintCommunication[]
+  attachments      ComplaintAttachment[]
+
+  @@index([category], map: "idx_complaints_category")
+  @@index([status], map: "idx_complaints_status")
+  @@index([priority], map: "idx_complaints_priority")
+  @@index([village], map: "idx_complaints_village")
+  @@index([dateReported], map: "idx_complaints_date")
+  @@index([citizenId], map: "idx_complaints_citizen")
+  @@index([assignedOfficerId], map: "idx_complaints_officer")
+  @@map("complaints")
+}
+
+model ComplaintCommunication {
+  id          BigInt   @id @default(autoincrement())
+  complaintId BigInt   @map("complaint_id")
+  date        DateTime @db.Date
+  action      String   @db.VarChar(255)
+  performedBy String   @map("performed_by") @db.VarChar(200)
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([complaintId], map: "idx_comm_complaint")
+  @@index([date], map: "idx_comm_date")
+  @@map("complaint_communications")
+}
+
+model ComplaintAttachment {
+  id          BigInt   @id @default(autoincrement())
+  complaintId BigInt   @map("complaint_id")
+  fileName    String   @map("file_name") @db.VarChar(255)
+  filePath    String   @map("file_path") @db.VarChar(500)
+  fileType    String?  @map("file_type") @db.VarChar(50)
+  fileSize    BigInt?
+  uploadedBy  BigInt?  @map("uploaded_by")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at") @db.DateTime(6)
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([complaintId], map: "idx_att_complaint")
+  @@map("complaint_attachments")
+}
+
+// ============================================================
+// 3. PROJECTS MODULE
+// ============================================================
+
+model Project {
+  id                    BigInt          @id @default(autoincrement())
+  projectCode           String          @unique @map("project_code") @db.VarChar(30)
+  projectName           String          @map("project_name") @db.VarChar(255)
+  category              ProjectCategory
+  ward                  String          @db.VarChar(100)
+  location              String?         @db.VarChar(255)
+  village               String?         @db.VarChar(100)
+  description           String?         @db.Text
+  contractorId          BigInt?         @map("contractor_id")
+  contractorName        String?         @map("contractor_name") @db.VarChar(200)
+  budget                Decimal         @default(0) @db.Decimal(15, 2)
+  amountSpent           Decimal         @default(0) @map("amount_spent") @db.Decimal(15, 2)
+  fundingSource         String?         @map("funding_source") @db.VarChar(100)
+  startDate             DateTime?       @map("start_date") @db.Date
+  expectedCompletion    DateTime?       @map("expected_completion") @db.Date
+  priority              ProjectPriority @default(Medium)
+  projectManagerId      BigInt?         @map("project_manager_id")
+  projectManagerName    String?         @map("project_manager_name") @db.VarChar(200)
+  status                ProjectStatus   @default(Planning)
+  progress              Int             @default(0) @db.SmallInt
+  financialYear         String?         @map("financial_year") @db.VarChar(20)
+  createdAt             DateTime        @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt             DateTime        @updatedAt @map("updated_at") @db.DateTime(6)
+
+  contractor     Staff?                 @relation("ProjectContractor", fields: [contractorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  manager        Staff?                 @relation("ProjectManager", fields: [projectManagerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  milestones     ProjectMilestone[]
+  updates        ProjectUpdate[]
+  budgetUpdates  ProjectBudgetUpdate[]
+  documents      ProjectDocument[]
+  activities     ProjectActivity[]
+  comments       ProjectComment[]
+  budgetAlloc    WardBudget[]
+
+  @@index([category], map: "idx_projects_category")
+  @@index([status], map: "idx_projects_status")
+  @@index([priority], map: "idx_projects_priority")
+  @@index([ward], map: "idx_projects_ward")
+  @@index([contractorId], map: "idx_projects_contractor")
+  @@index([projectManagerId], map: "idx_projects_manager")
+  @@map("projects")
+}
+
+model ProjectMilestone {
+  id          BigInt          @id @default(autoincrement())
+  projectId   BigInt          @map("project_id")
+  title       String          @db.VarChar(255)
+  dueDate     DateTime        @map("due_date") @db.Date
+  status      MilestoneStatus @default(Pending)
+  completedAt DateTime?       @map("completed_at") @db.DateTime(6)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_milestone_project")
+  @@index([status], map: "idx_milestone_status")
+  @@map("project_milestones")
+}
+
+model ProjectUpdate {
+  id         BigInt   @id @default(autoincrement())
+  projectId  BigInt   @map("project_id")
+  date       DateTime @db.Date
+  updateText String   @map("update_text") @db.Text
+  updatedBy  String   @map("updated_by") @db.VarChar(200)
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_update_project")
+  @@index([date], map: "idx_update_date")
+  @@map("project_updates")
+}
+
+model ProjectBudgetUpdate {
+  id        BigInt           @id @default(autoincrement())
+  projectId BigInt           @map("project_id")
+  date      DateTime         @db.Date
+  item      String           @db.VarChar(255)
+  amount    Decimal          @db.Decimal(15, 2)
+  type      BudgetUpdateType @default(utilized)
+  createdAt DateTime         @default(now()) @map("created_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_project_budget_project")
+  @@index([date], map: "idx_project_budget_date")
+  @@map("project_budget_updates")
+}
+
+model ProjectDocument {
+  id           BigInt   @id @default(autoincrement())
+  projectId    BigInt   @map("project_id")
+  documentName String   @map("document_name") @db.VarChar(255)
+  filePath     String?  @map("file_path") @db.VarChar(500)
+  fileType     String?  @map("file_type") @db.VarChar(50)
+  uploadedBy   BigInt?  @map("uploaded_by")
+  uploadedAt   DateTime @default(now()) @map("uploaded_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_doc_project")
+  @@map("project_documents")
+}
+
+model ProjectActivity {
+  id          BigInt   @id @default(autoincrement())
+  projectId   BigInt   @map("project_id")
+  date        DateTime @db.Date
+  action      String   @db.VarChar(255)
+  performedBy String   @map("performed_by") @db.VarChar(200)
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_activity_project")
+  @@index([date], map: "idx_activity_date")
+  @@map("project_activities")
+}
+
+model ProjectComment {
+  id          BigInt   @id @default(autoincrement())
+  projectId   BigInt   @map("project_id")
+  author      String   @db.VarChar(200)
+  date        DateTime @db.Date
+  commentText String   @map("comment_text") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([projectId], map: "idx_comment_project")
+  @@index([date], map: "idx_comment_date")
+  @@map("project_comments")
+}
+
+// ============================================================
+// 4. MEETINGS MODULE
+// ============================================================
+
+model Meeting {
+  id                BigInt         @id @default(autoincrement())
+  meetingCode       String         @unique @map("meeting_code") @db.VarChar(30)
+  title             String         @db.VarChar(255)
+  type              MeetingType
+  priority          MeetingPriority @default(Medium)
+  status            MeetingStatus  @default(Scheduled)
+  date              DateTime       @db.Date
+  time              DateTime       @db.Time
+  endTime           DateTime       @map("end_time") @db.Time
+  venue             String         @db.VarChar(255)
+  village           String?        @db.VarChar(100)
+  chairperson       String?        @db.VarChar(200)
+  secretary         String?        @db.VarChar(200)
+  organizer         String?        @db.VarChar(200)
+  expectedAttendance Int           @default(0) @map("expected_attendance")
+  actualAttendance  Int            @default(0) @map("actual_attendance")
+  description       String?        @db.Text
+  createdAt         DateTime       @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt         DateTime       @updatedAt @map("updated_at") @db.DateTime(6)
+
+  agendaItems  MeetingAgenda[]
+  minutes      MeetingMinute[]
+  actionItems  MeetingActionItem[]
+  attendance   MeetingAttendance[]
+  activities   MeetingActivity[]
+
+  @@index([type], map: "idx_meetings_type")
+  @@index([status], map: "idx_meetings_status")
+  @@index([date], map: "idx_meetings_date")
+  @@index([village], map: "idx_meetings_village")
+  @@map("meetings")
+}
+
+model MeetingAgenda {
+  id        BigInt  @id @default(autoincrement())
+  meetingId BigInt  @map("meeting_id")
+  itemOrder Int     @default(0) @map("item_order")
+  item      String  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([meetingId], map: "idx_agenda_meeting")
+  @@map("meeting_agenda")
+}
+
+model MeetingMinute {
+  id         BigInt  @id @default(autoincrement())
+  meetingId  BigInt  @map("meeting_id")
+  itemOrder  Int     @default(0) @map("item_order")
+  minuteText String  @map("minute_text") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([meetingId], map: "idx_minutes_meeting")
+  @@map("meeting_minutes")
+}
+
+model MeetingActionItem {
+  id          BigInt          @id @default(autoincrement())
+  meetingId   BigInt          @map("meeting_id")
+  item        String          @db.VarChar(255)
+  owner       String          @db.VarChar(200)
+  dueDate     DateTime        @map("due_date") @db.Date
+  status      ActionItemStatus @default(Pending)
+  completedAt DateTime?       @map("completed_at") @db.DateTime(6)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.DateTime(6)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([meetingId], map: "idx_action_meeting")
+  @@index([status], map: "idx_action_status")
+  @@index([dueDate], map: "idx_action_due")
+  @@map("meeting_action_items")
+}
+
+model MeetingAttendance {
+  id        BigInt  @id @default(autoincrement())
+  meetingId BigInt  @map("meeting_id")
+  name      String  @db.VarChar(200)
+  role      String? @db.VarChar(100)
+  present   Boolean @default(false)
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([meetingId], map: "idx_attendance_meeting")
+  @@map("meeting_attendance")
+}
+
+model MeetingActivity {
+  id          BigInt  @id @default(autoincrement())
+  meetingId   BigInt  @map("meeting_id")
+  date        DateTime @db.Date
+  action      String  @db.VarChar(255)
+  performedBy String  @map("performed_by") @db.VarChar(200)
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([meetingId], map: "idx_meeting_activity")
+  @@index([date], map: "idx_meeting_activity_date")
+  @@map("meeting_activities")
+}
+
+// ============================================================
+// 5. BUDGET & REPORTS MODULE
+// ============================================================
+
+model WardBudget {
+  id              BigInt   @id @default(autoincrement())
+  financialYear   String   @map("financial_year") @db.VarChar(20)
+  category        String   @db.VarChar(100)
+  allocatedAmount Decimal  @default(0) @map("allocated_amount") @db.Decimal(15, 2)
+  spentAmount     Decimal  @default(0) @map("spent_amount") @db.Decimal(15, 2)
+  projectId       BigInt?  @map("project_id")
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.DateTime(6)
+
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([financialYear], map: "idx_ward_budget_year")
+  @@index([category], map: "idx_ward_budget_category")
+  @@index([projectId], map: "idx_ward_budget_project")
+  @@map("ward_budget")
+}
+
+model Report {
+  id           BigInt      @id @default(autoincrement())
+  reportName   String      @map("report_name") @db.VarChar(255)
+  reportType   ReportType  @map("report_type")
+  reportFormat ReportFormat @default(PDF) @map("report_format")
+  parameters   String?
+  generatedBy  BigInt?     @map("generated_by")
+  filePath     String?     @map("file_path") @db.VarChar(500)
+  generatedAt  DateTime    @default(now()) @map("generated_at") @db.DateTime(6)
+
+  user User? @relation(fields: [generatedBy], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([reportType], map: "idx_reports_type")
+  @@index([generatedAt], map: "idx_reports_generated")
+  @@index([generatedBy], map: "idx_reports_by")
+  @@map("reports")
+}
+
+// ============================================================
+// 5A. MEDIA MODULE
+// ============================================================
+
+model Media {
+  id            BigInt    @id @default(autoincrement())
+  publicId      String    @unique @map("public_id") @db.VarChar(255)
+  url           String    @db.VarChar(500)
+  secureUrl     String    @map("secure_url") @db.VarChar(500)
+  format        String?   @db.VarChar(50)
+  resourceType  String?   @map("resource_type") @db.VarChar(50)
+  width         Int?
+  height        Int?
+  bytes         BigInt?
+  originalName  String?   @map("original_name") @db.VarChar(255)
+  mimeType      String?   @map("mime_type") @db.VarChar(100)
+  uploadedBy     BigInt?   @map("uploaded_by")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([publicId], map: "idx_media_public_id")
+  @@index([uploadedBy], map: "idx_media_uploaded_by")
+  @@index([createdAt], map: "idx_media_created_at")
+  @@map("media")
+}
+
+// ============================================================
+// 6. SETTINGS MODULE
+// ============================================================
+
+model SystemSettings {
+  id             BigInt   @id @default(autoincrement())
+  settingKey     String   @unique @map("setting_key") @db.VarChar(100)
+  settingValue   String   @map("setting_value") @db.Text
+  settingType    String   @default("text") @map("setting_type") @db.VarChar(50)
+  description    String?  @db.VarChar(255)
+  isEditable     Boolean  @default(true) @map("is_editable")
+  updatedBy      BigInt?  @map("updated_by")
+  createdAt      DateTime @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.DateTime(6)
+
+  @@index([settingKey], map: "idx_settings_key")
+  @@map("system_settings")
+}
+
+model SystemActivity {
+  id          BigInt   @id @default(autoincrement())
+  activity    String   @db.VarChar(255)
+  userId      BigInt?  @map("user_id")
+  userName    String   @map("user_name") @db.VarChar(200)
+  details     String   @db.Text
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  userAgent   String?  @map("user_agent") @db.VarChar(500)
+  status      String   @default("Success") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([userId], map: "idx_activity_user")
+  @@index([activity], map: "idx_activity_type")
+  @@index([createdAt], map: "idx_activity_date")
+  @@map("system_activities")
+}
+
+// ============================================================
+// 7. CITIZER DASHBOARD MODULE
+// ============================================================
+
+enum AnnouncementCategory {
+  General
+  Road_Maintenance
+  Water_Service
+  Health_Campaign
+  Public_Participation
+  Community_Event
+  Emergency
+  Other
+}
+
+enum NotificationType {
+  Complaint_Update
+  Meeting_Reminder
+  Project_Update
+  Announcement
+  System
+}
+
+model Announcement {
+  id          BigInt              @id @default(autoincrement())
+  title       String              @db.VarChar(255)
+  description String              @db.Text
+  category    AnnouncementCategory @default(General)
+  ward        String              @db.VarChar(100)
+  isPublished Boolean             @default(false) @map("is_published")
+  publishedAt DateTime?           @map("published_at") @db.DateTime(6)
+  createdBy   BigInt?             @map("created_by")
+  createdAt   DateTime            @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt   DateTime            @updatedAt @map("updated_at") @db.DateTime(6)
+
+  @@index([ward], map: "idx_announcements_ward")
+  @@index([category], map: "idx_announcements_category")
+  @@index([isPublished], map: "idx_announcements_published")
+  @@index([createdAt], map: "idx_announcements_created")
+  @@map("announcements")
+}
+
+model Notification {
+  id            BigInt          @id @default(autoincrement())
+  userId        BigInt          @map("user_id")
+  type          NotificationType @default(System)
+  title         String          @db.VarChar(255)
+  message       String          @db.Text
+  relatedId     BigInt?         @map("related_id")
+  relatedType   String?         @map("related_type") @db.VarChar(50)
+  isRead        Boolean         @default(false) @map("is_read")
+  readAt        DateTime?       @map("read_at") @db.DateTime(6)
+  createdAt     DateTime        @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([userId], map: "idx_notifications_user")
+  @@index([isRead], map: "idx_notifications_read")
+  @@index([createdAt], map: "idx_notifications_created")
+  @@map("notifications")
+}
