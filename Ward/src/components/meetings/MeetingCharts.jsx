@@ -39,9 +39,9 @@ function MeetingCharts({ meetings }) {
   const maxVillage = Math.max(...Object.values(villageData), 1);
 
   const typeColors = {
-    "Ward Development Committee": "#006b3c",
-    "Public Baraza": "#d4a017",
-    "Budget Review": "#0e8a4b",
+    "Ward Development Committee": "#7c3aed",
+    "Public Baraza": "#a78bfa",
+    "Budget Review": "#8b5cf6",
     "Planning Session": "#1d4ed8",
     "Town Hall": "#7c3aed",
     "Project Steering Committee": "#b91c1c",
@@ -54,7 +54,7 @@ function MeetingCharts({ meetings }) {
   const statusColors = {
     "Scheduled": "#1d4ed8",
     "In Progress": "#f59e0b",
-    "Completed": "#166534",
+    "Completed": "#6d28d9",
     "Postponed": "#7c3aed",
     "Cancelled": "#64748b",
   };
@@ -90,7 +90,7 @@ function MeetingCharts({ meetings }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxType) * 100}%`,
-                  background: typeColors[type] || "#006b3c",
+                  background: typeColors[type] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -121,7 +121,7 @@ function MeetingCharts({ meetings }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / meetings.length) * 100}%`,
-                  background: statusColors[status] || "#006b3c",
+                  background: statusColors[status] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -158,7 +158,7 @@ function MeetingCharts({ meetings }) {
                 }}>
                   <div style={{
                     width: "2.4rem", height: "2.4rem", borderRadius: "0.55rem",
-                    background: "#e8f6ee", color: "#0e8a4b", display: "grid",
+                    background: "#f5f3ff", color: "#8b5cf6", display: "grid",
                     placeItems: "center", flexShrink: 0,
                   }}>
                     <div style={{ textAlign: "center", lineHeight: 1.05 }}>
@@ -205,7 +205,7 @@ function MeetingCharts({ meetings }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxVillage) * 100}%`,
-                  background: "#0e8a4b",
+                  background: "#8b5cf6",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -236,7 +236,7 @@ function MeetingCharts({ meetings }) {
             <div style={{
               height: "100%",
               width: `${Math.min(attendanceRate, 100)}%`,
-              background: attendanceRate >= 70 ? "#166534" : attendanceRate >= 50 ? "#f59e0b" : "#b91c1c",
+              background: attendanceRate >= 70 ? "#6d28d9" : attendanceRate >= 50 ? "#f59e0b" : "#b91c1c",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />
@@ -280,7 +280,7 @@ function MeetingCharts({ meetings }) {
             </div>
           </div>
           <div className="quick-stat-item">
-            <div className="quick-stat-icon" style={{ background: "#ecfdf3", color: "#166534" }}><CheckCircle2 size={16} /></div>
+            <div className="quick-stat-icon" style={{ background: "#f5f3ff", color: "#6d28d9" }}><CheckCircle2 size={16} /></div>
             <div className="quick-stat-info">
               <span className="quick-stat-value">{actionRate}%</span>
               <span className="quick-stat-label">Action Items Completed</span>

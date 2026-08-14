@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-const INSIGHT_COLORS = ["#006B3C", "#0E8A4B", "#2D936C", "#65A30D", "#C9A227", "#15803D", "#4D7C0F", "#047857"];
+const INSIGHT_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
 
 function BudgetInsights({ monthly, performance, topSpending, leastUtilized }) {
   const formatKES = (amount) => {
@@ -54,7 +54,7 @@ function BudgetInsights({ monthly, performance, topSpending, leastUtilized }) {
               <XAxis dataKey="month" stroke="#64748b" fontSize={10} />
               <YAxis stroke="#64748b" fontSize={10} />
               <Tooltip formatter={(value) => `KES ${value}M`} />
-              <Line type="monotone" dataKey="spent" stroke="#006B3C" strokeWidth={3} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="spent" stroke="#7c3aed" strokeWidth={3} dot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -95,7 +95,7 @@ function BudgetInsights({ monthly, performance, topSpending, leastUtilized }) {
                 style={{
                   height: "100%",
                   width: `${avgEfficiency}%`,
-                  background: avgEfficiency >= 75 ? "#166534" : avgEfficiency >= 60 ? "#f59e0b" : "#b91c1c",
+                  background: avgEfficiency >= 75 ? "#6d28d9" : avgEfficiency >= 60 ? "#f59e0b" : "#b91c1c",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }}

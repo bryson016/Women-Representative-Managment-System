@@ -15,7 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-const PIE_COLORS = ["#006B3C", "#0E8A4B", "#2D936C", "#65A30D", "#C9A227", "#B91C1C"];
+const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#B91C1C"];
 
 function ProjectCharts({ projects }) {
   // Calculate chart data
@@ -46,11 +46,11 @@ function ProjectCharts({ projects }) {
   const maxWard = Math.max(...Object.values(wardData), 1);
 
   const categoryColors = {
-    "Roads & Transport": "#006b3c",
-    "Water & Sanitation": "#0e8a4b",
+    "Roads & Transport": "#7c3aed",
+    "Water & Sanitation": "#8b5cf6",
     "Health Services": "#b91c1c",
     "Education Support": "#1d4ed8",
-    "Public Markets": "#d4a017",
+    "Public Markets": "#a78bfa",
     "Street Lighting": "#f59e0b",
     "Drainage & Flood Control": "#7c3aed",
     "Community Facilities": "#64748b",
@@ -59,9 +59,9 @@ function ProjectCharts({ projects }) {
   const statusColors = {
     "Planning": "#f59e0b",
     "Approved": "#1d4ed8",
-    "Ongoing": "#0e8a4b",
+    "Ongoing": "#8b5cf6",
     "Delayed": "#dc2626",
-    "Completed": "#166534",
+    "Completed": "#6d28d9",
     "Cancelled": "#64748b",
   };
 
@@ -112,7 +112,7 @@ function ProjectCharts({ projects }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxCategory) * 100}%`,
-                  background: categoryColors[category] || "#006b3c",
+                  background: categoryColors[category] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -143,7 +143,7 @@ function ProjectCharts({ projects }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / projects.length) * 100}%`,
-                  background: statusColors[status] || "#006b3c",
+                  background: statusColors[status] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -170,8 +170,8 @@ function ProjectCharts({ projects }) {
               <YAxis stroke="#64748b" fontSize={10} />
               <Tooltip />
               <Legend wrapperStyle={{ fontSize: "0.7rem" }} />
-              <Bar dataKey="allocated" name="Allocated (M)" fill="#006B3C" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="utilized" name="Utilized (M)" fill="#d4a017" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="allocated" name="Allocated (M)" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="utilized" name="Utilized (M)" fill="#a78bfa" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
@@ -200,7 +200,7 @@ function ProjectCharts({ projects }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxWard) * 100}%`,
-                  background: "#0e8a4b",
+                  background: "#8b5cf6",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -231,7 +231,7 @@ function ProjectCharts({ projects }) {
             <div style={{
               height: "100%",
               width: `${Math.min((avgCompletionTime / 18) * 100, 100)}%`,
-              background: avgCompletionTime <= 8 ? "#166534" : avgCompletionTime <= 12 ? "#f59e0b" : "#b91c1c",
+              background: avgCompletionTime <= 8 ? "#6d28d9" : avgCompletionTime <= 12 ? "#f59e0b" : "#b91c1c",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />
@@ -257,7 +257,7 @@ function ProjectCharts({ projects }) {
             <XAxis dataKey="month" stroke="#64748b" fontSize={10} />
             <YAxis stroke="#64748b" fontSize={10} />
             <Tooltip />
-            <Line type="monotone" dataKey="progress" stroke="#006B3C" strokeWidth={3} dot={{ r: 4 }} />
+            <Line type="monotone" dataKey="progress" stroke="#7c3aed" strokeWidth={3} dot={{ r: 4 }} />
           </LineChart>
         </ResponsiveContainer>
       </motion.div>

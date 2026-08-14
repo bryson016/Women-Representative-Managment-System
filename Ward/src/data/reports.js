@@ -44,8 +44,8 @@ export const reportActivityData = [
 ];
 
 export const reportCategoryData = [
-  { name: "Financial", value: 42, color: "#006B3C" },
-  { name: "Development", value: 35, color: "#0E8A4B" },
+  { name: "Financial", value: 42, color: "#7c3aed" },
+  { name: "Development", value: 35, color: "#8b5cf6" },
   { name: "Citizen Services", value: 28, color: "#2D936C" },
   { name: "Complaints", value: 22, color: "#65A30D" },
   { name: "Staff", value: 18, color: "#C9A227" },

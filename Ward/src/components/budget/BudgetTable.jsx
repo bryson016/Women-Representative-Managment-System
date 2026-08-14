@@ -21,7 +21,7 @@ function BudgetTable({ data }) {
     const pct = allocated > 0 ? (utilized / allocated) * 100 : 0;
     if (pct >= 90) return "#b91c1c";
     if (pct >= 75) return "#f59e0b";
-    return "#006b3c";
+    return "#7c3aed";
   };
 
   return (

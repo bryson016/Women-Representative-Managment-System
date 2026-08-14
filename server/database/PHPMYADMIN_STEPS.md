@@ -41,7 +41,7 @@ INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_
 VALUES (
   'System Administrator',
   'admin',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'admin',
   'Westlands',
   'admin@ward.gov.ke',
@@ -82,9 +82,10 @@ VALUES (
 2. Go to: `http://localhost:5173/login`
 3. Enter:
    - **Username:** `admin`
-   - **Password:** `Admin@123`
 4. Click **Login**
 5. You should be redirected to `/dashboard` (the admin dashboard)
+
+> Note: Password login has been disabled. Enter only your username to sign in.
 
 ---
 
@@ -118,7 +119,7 @@ INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_
 VALUES (
   'Staff User',
   'staff',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'staff',
   'Westlands',
   'staff@ward.gov.ke',
@@ -134,7 +135,7 @@ INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_
 VALUES (
   'John Citizen',
   'citizen',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'citizen',
   'Westlands',
   'citizen@ward.gov.ke',
@@ -147,11 +148,13 @@ VALUES (
 
 ## Quick Reference: Login Credentials
 
-| Username | Password | Role | Dashboard |
-|----------|----------|------|-----------|
-| admin | Admin@123 | admin | /dashboard |
-| staff | Admin@123 | staff | /dashboard |
-| citizen | Admin@123 | citizen | /citizen/dashboard |
+| Username | Role | Dashboard |
+|----------|------|-----------|
+| admin | admin | /dashboard |
+| staff | staff | /dashboard |
+| citizen | citizen | /citizen/dashboard |
+
+> Note: Password login has been disabled. Users authenticate with username only.
 
 ---
 

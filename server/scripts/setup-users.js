@@ -1,10 +1,6 @@
-const bcrypt = require('bcrypt');
-const pool = require('../config/db');
+const pool = require('../src/config/db');
 
 async function setupUsers() {
-  const password = 'Admin@123'; // Change this to your desired password
-  const passwordHash = await bcrypt.hash(password, 10);
-
   const users = [
     {
       fullName: 'System Administrator',
@@ -36,9 +32,9 @@ async function setupUsers() {
     try {
       await pool.execute(
         `INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_number, is_active)
-         VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)
+         VALUES (?, ?, NULL, ?, ?, ?, ?, TRUE)
          ON DUPLICATE KEY UPDATE role = VALUES(role), password_hash = VALUES(password_hash)`,
-        [user.fullName, user.username, passwordHash, user.role, user.ward, user.email, user.phoneNumber]
+        [user.fullName, user.username, user.role, user.ward, user.email, user.phoneNumber]
       );
       console.log(`✓ Created/updated user: ${user.username} (${user.role})`);
     } catch (error) {
@@ -51,7 +47,6 @@ async function setupUsers() {
   console.log('\n--- Users in database ---');
   console.table(rows);
 
-  console.log(`\nPassword for all users: ${password}`);
   console.log('\nSetup complete!');
   process.exit(0);
 }

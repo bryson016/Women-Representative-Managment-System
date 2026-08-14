@@ -912,7 +912,7 @@ function SettingsPage({ onLogout }) {
         </section>
 
         <footer className="dashboard-footer">
-          <p>Ward Management System</p>
+          <p>Women Repsentative system</p>
           <p>© 2026 Advanware. All rights reserved.</p>
           <p>Version 1.0</p>
         </footer>

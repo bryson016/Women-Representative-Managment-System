@@ -5,6 +5,7 @@ const protectedRoutes = require("./routes/protectedRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const citizenRoutes = require("./routes/citizenRoutes");
+const bursaryRoutes = require("./routes/bursaryRoutes");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/protected", protectedRoutes);
 app.use("/api/protected", settingsRoutes);
 app.use("/api/protected", uploadRoutes);
 app.use("/api/citizen", citizenRoutes);
+app.use("/api/bursary", bursaryRoutes);
 
 app.use((err, req, res, next) => {
   return res.status(500).json({ message: "Internal server error." });

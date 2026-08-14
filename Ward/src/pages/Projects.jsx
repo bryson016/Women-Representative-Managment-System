@@ -294,14 +294,14 @@ function Projects({ onLogout }) {
         <head><title>Development Projects Export</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
-          h1 { color: #006b3c; }
+          h1 { color: #7c3aed; }
           table { width: 100%; border-collapse: collapse; margin-top: 10px; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 10px; }
-          th { background: #006b3c; color: white; }
+          th { background: #7c3aed; color: white; }
         </style>
         </head>
         <body>
-          <h1>Development Project Records - Ward Management System</h1>
+          <h1>Development Project Records - Women Repsentative system</h1>
           <p>Generated: ${new Date().toLocaleDateString()}</p>
           <table>
             <thead><tr>
@@ -358,7 +358,7 @@ function Projects({ onLogout }) {
           />
           <ProjectDetails project={viewingProject} onBack={handleBack} />
           <footer className="dashboard-footer">
-            <p>Ward Management System</p>
+            <p>Women Repsentative system</p>
             <p>Academic Demonstration Project</p>
             <p>Version 1.0</p>
           </footer>
@@ -619,7 +619,7 @@ function Projects({ onLogout }) {
         )}
 
         <footer className="dashboard-footer">
-          <p>Ward Management System</p>
+          <p>Women Repsentative system</p>
           <p>Academic Demonstration Project</p>
           <p>Version 1.0</p>
         </footer>

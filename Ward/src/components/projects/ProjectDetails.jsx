@@ -25,9 +25,9 @@ function ProjectDetails({ project, onBack }) {
   };
 
   const getProgressColor = (progress) => {
-    if (progress >= 100) return "#166534";
-    if (progress >= 60) return "#0e8a4b";
-    if (progress >= 30) return "#d4a017";
+    if (progress >= 100) return "#6d28d9";
+    if (progress >= 60) return "#8b5cf6";
+    if (progress >= 30) return "#a78bfa";
     return "#b91c1c";
   };
 
@@ -140,7 +140,7 @@ function ProjectDetails({ project, onBack }) {
               </div>
               <div className="info-item">
                 <span className="info-label">Amount Spent</span>
-                <span className="info-value" style={{ fontWeight: 700, color: "#0e8a4b" }}>{formatKES(project.amountSpent)}</span>
+                <span className="info-value" style={{ fontWeight: 700, color: "#8b5cf6" }}>{formatKES(project.amountSpent)}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Remaining Balance</span>
@@ -295,7 +295,7 @@ function ProjectDetails({ project, onBack }) {
                       <span className="milestone-title">{update.item}</span>
                     </div>
                     <div className="milestone-meta">
-                      <span style={{ color: update.type === "returned" ? "#b91c1c" : "#166534", fontWeight: 600 }}>
+                      <span style={{ color: update.type === "returned" ? "#b91c1c" : "#6d28d9", fontWeight: 600 }}>
                         {formatKES(update.amount)}
                       </span>
                       <span>· {update.date}</span>

@@ -54,3 +54,8 @@ export async function markAllNotificationsAsRead() {
   const response = await api.put("/api/citizen/notifications/read-all");
   return response.data;
 }
+
+export async function submitBursaryApplication(data) {
+  const response = await api.post("/api/bursary/applications", data);
+  return response.data;
+}

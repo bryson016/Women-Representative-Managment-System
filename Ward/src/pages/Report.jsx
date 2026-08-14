@@ -48,7 +48,7 @@ import {
   wardPerformanceData,
 } from "../data/reports";
 
-const PIE_COLORS = ["#006B3C", "#0E8A4B", "#2D936C", "#65A30D", "#C9A227", "#047857"];
+const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#047857"];
 
 const ICON_MAP = {
   FileText,
@@ -322,7 +322,7 @@ function Report({ onLogout }) {
                 <Line
                   type="monotone"
                   dataKey="reports"
-                  stroke="#006B3C"
+                  stroke="#7c3aed"
                   strokeWidth={3}
                   dot={{ r: 4 }}
                   name="Total Reports"
@@ -330,7 +330,7 @@ function Report({ onLogout }) {
                 <Line
                   type="monotone"
                   dataKey="completed"
-                  stroke="#0E8A4B"
+                  stroke="#8b5cf6"
                   strokeWidth={3}
                   dot={{ r: 4 }}
                   name="Completed"
@@ -381,7 +381,7 @@ function Report({ onLogout }) {
                 <Tooltip />
                 <Bar
                   dataKey="score"
-                  fill="#006B3C"
+                  fill="#7c3aed"
                   radius={[8, 8, 0, 0]}
                   name="Performance Score"
                 />
@@ -547,7 +547,7 @@ function Report({ onLogout }) {
         </section>
 
         <footer className="dashboard-footer">
-          <p>Ward Management System</p>
+          <p>Women Repsentative system</p>
           <p>© 2026 Advanware. All rights reserved.</p>
           <p>Version 1.0</p>
         </footer>

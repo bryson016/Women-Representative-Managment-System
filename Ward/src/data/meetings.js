@@ -16,25 +16,25 @@ export const meetingStatuses = ["Scheduled", "In Progress", "Completed", "Postpo
 export const priorities = ["Low", "Medium", "High", "Urgent"];
 
 export const venues = [
-  "Kiangombe",
-  "Kisii",
-  "Kangemi Grounds",
-  "Makongeni Village",
-  "Runda",
-  "Muthiga",
+  "NAROK NORTH",
+  "NAROKR TOWN",
+  "KILGORIS",
+  "EMURUA DIKIR",
+  "KEYIAN",
+  "OLOLMASANI",
 ];
 
 export const chairpersons = [
-  "Hon. John Kamau",
+  "Hon. NANCY WANGARI",
   "Jane Wanjiku",
-  "Peter Otieno",
-  "Grace Achieng",
+  "Peter Kipchoge",
+  "Grace KITETE",
   "David Kiptoo",
   "Faith Njeri",
   "Samuel Omondi",
   "Esther Chebet",
-  "Michael Ndegwa",
-  "Sarah Wairimu",
+  "Michael Kiptee",
+  "Sarah Kitot",
 ];
 
 export const secretaries = [

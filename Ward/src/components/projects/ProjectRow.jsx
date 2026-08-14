@@ -28,9 +28,9 @@ function ProjectRow({ project, index, onView, onEdit, onDelete, onUpdateProgress
   };
 
   const getProgressColor = (progress) => {
-    if (progress >= 100) return "#166534";
-    if (progress >= 60) return "#0e8a4b";
-    if (progress >= 30) return "#d4a017";
+    if (progress >= 100) return "#6d28d9";
+    if (progress >= 60) return "#8b5cf6";
+    if (progress >= 30) return "#a78bfa";
     return "#b91c1c";
   };
 

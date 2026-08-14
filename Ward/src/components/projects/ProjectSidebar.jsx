@@ -127,7 +127,7 @@ function ProjectSidebar({ projects }) {
                   <span className="milestone-title">{update.item}</span>
                 </div>
                 <div className="milestone-meta">
-                  <span style={{ fontWeight: 700, color: "#166534" }}>{formatKES(update.amount)}</span>
+                  <span style={{ fontWeight: 700, color: "#6d28d9" }}>{formatKES(update.amount)}</span>
                   <span>· {update.date}</span>
                 </div>
               </div>

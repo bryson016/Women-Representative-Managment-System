@@ -245,14 +245,14 @@ function Complaints({ onLogout }) {
         <head><title>Complaints Export</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
-          h1 { color: #006b3c; }
+          h1 { color: #7c3aed; }
           table { width: 100%; border-collapse: collapse; margin-top: 10px; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-          th { background: #006b3c; color: white; }
+          th { background: #7c3aed; color: white; }
         </style>
         </head>
         <body>
-          <h1>Complaint Records - Ward Management System</h1>
+          <h1>Complaint Records - Women Repsentative system</h1>
           <p>Generated: ${new Date().toLocaleDateString()}</p>
           <table>
             <thead><tr>
@@ -307,7 +307,7 @@ function Complaints({ onLogout }) {
           />
           <ComplaintDetails complaint={viewingComplaint} onBack={handleBack} />
           <footer className="dashboard-footer">
-            <p>Ward Management System</p>
+            <p>Women Repsentative system</p>
             <p>Academic Demonstration Project</p>
             <p>Version 1.0</p>
           </footer>
@@ -499,7 +499,7 @@ function Complaints({ onLogout }) {
         )}
 
         <footer className="dashboard-footer">
-          <p>Ward Management System</p>
+          <p>Women Repsentative system</p>
           <p>© 2026 Advanware. All rights reserved.</p>
           <p>Version 1.0</p>
         </footer>

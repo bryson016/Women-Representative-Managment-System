@@ -15,7 +15,7 @@ export const generalSettings = {
   wardName: "Kiambu Ward",
   wardCode: "KBW-001",
   county: "Kiambu County",
-  systemName: "Ward Management System",
+  systemName: "Women Repsentative system",
   financialYear: "2026/2027",
   timeZone: "Africa/Nairobi (EAT)",
   email: "info@kiambuward.go.ke",

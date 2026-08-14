@@ -34,7 +34,7 @@ function BudgetSidebar({ transactions, alerts }) {
                 <span className="milestone-title">{tx.title}</span>
               </div>
               <div className="milestone-meta">
-                <span style={{ fontWeight: 700, color: "#166534", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+                <span style={{ fontWeight: 700, color: "#6d28d9", display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
                   <ArrowDownRight size={12} />
                   {formatKES(tx.amount)}
                 </span>

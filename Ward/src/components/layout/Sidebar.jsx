@@ -3,6 +3,7 @@ import {
   Building2,
   CalendarDays,
   FileText,
+  GraduationCap,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -19,6 +20,7 @@ const ICON_MAP = {
   LayoutDashboard,
   Users,
   Megaphone,
+  GraduationCap,
   Building2,
   CalendarDays,
   BriefcaseBusiness,
@@ -44,7 +46,7 @@ function Sidebar({ activeItem, onItemClick, collapsed, onToggleCollapse, mobileO
             <div className="brand-logo">
               <Building2 size={18} />
             </div>
-            {!collapsed ? <span>Ward Management System</span> : null}
+            {!collapsed ? <span>Women Repsentative system</span> : null}
           </div>
 
           <div className="sidebar-head-actions">

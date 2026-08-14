@@ -262,7 +262,7 @@ function StaffModal({ isOpen, onClose, onSave, staff, departments, roles, status
                               padding: "0.3rem 0.6rem",
                               borderRadius: "999px",
                               border: "1px solid var(--gov-border)",
-                              background: formData.villagesCovered.includes(v) ? "#006b3c" : "#fff",
+                              background: formData.villagesCovered.includes(v) ? "#7c3aed" : "#fff",
                               color: formData.villagesCovered.includes(v) ? "#fff" : "#334155",
                               fontSize: "0.75rem",
                               cursor: "pointer",

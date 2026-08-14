@@ -192,7 +192,7 @@ function StaffDashboard({ staff, onViewStaff }) {
             <div style={{
               height: "100%",
               width: `${((statusCounts["On Duty"] + statusCounts["Field Visit"]) / staff.length * 100)}%`,
-              background: "linear-gradient(90deg, #006b3c, #0e8a4b)",
+              background: "linear-gradient(90deg, #7c3aed, #8b5cf6)",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />
@@ -246,7 +246,7 @@ function StaffDashboard({ staff, onViewStaff }) {
             </div>
           </div>
           <div className="quick-stat-item">
-            <div className="quick-stat-icon" style={{ background: "#ecfdf3", color: "#166534" }}><TrendingUp size={16} /></div>
+            <div className="quick-stat-icon" style={{ background: "#f5f3ff", color: "#6d28d9" }}><TrendingUp size={16} /></div>
             <div className="quick-stat-info">
               <span className="quick-stat-value">{avgPerformance}%</span>
               <span className="quick-stat-label">Avg Performance</span>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -14,6 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { CheckCircle, GraduationCap } from "lucide-react";
 import Sidebar from "../components/layout/Sidebar";
 import TopNavbar from "../components/layout/TopNavbar";
 import DashboardCard from "../components/DashboardCard";
@@ -34,8 +35,9 @@ import {
   statCards,
   upcomingMeetings,
 } from "../data/dashboardData";
+import { getBursaryStats } from "../services/bursaryApi";
 
-const PIE_COLORS = ["#006B3C", "#0E8A4B", "#2D936C", "#65A30D", "#C9A227"];
+const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227"];
 
 function Dashboard({ onLogout }) {
   const navigate = useNavigate();
@@ -43,6 +45,7 @@ function Dashboard({ onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [bursaryStats, setBursaryStats] = useState(null);
 
   const currentDate = useMemo(
     () =>
@@ -57,6 +60,18 @@ function Dashboard({ onLogout }) {
 
   const breadcrumb = ["Dashboard", activeItem === "dashboard" ? "Overview" : activeItem];
 
+  useEffect(() => {
+    async function loadBursaryStats() {
+      try {
+        const data = await getBursaryStats();
+        setBursaryStats(data);
+      } catch (error) {
+        console.error("Error loading bursary stats:", error);
+      }
+    }
+    loadBursaryStats();
+  }, []);
+
   const handleItemClick = (id) => {
     if (id === "logout") {
       onLogout();
@@ -68,6 +83,10 @@ function Dashboard({ onLogout }) {
     }
     if (id === "complaints") {
       navigate("/complaints");
+      return;
+    }
+    if (id === "bursary") {
+      navigate("/bursary");
       return;
     }
     if (id === "projects") {
@@ -137,7 +156,7 @@ function Dashboard({ onLogout }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" }}
             >
-              Hon. Gabriel Kithaka
+              Hon. Nancy Wangari
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 24 }}
@@ -165,7 +184,7 @@ function Dashboard({ onLogout }) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: 0.65, ease: "easeOut" }}
               >
-                Ward: Westlands
+                Ward: Narok
               </motion.span>
               <motion.span
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -182,6 +201,42 @@ function Dashboard({ onLogout }) {
           {statCards.map((card, index) => (
             <DashboardCard key={card.id} {...card} index={index} />
           ))}
+          {bursaryStats && (
+            <>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#7c3aed15", color: "#7c3aed" }}>
+                    <GraduationCap size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.totalApplications}</h3>
+                <h4>Bursary Applications</h4>
+                <p>{bursaryStats.pending} pending review</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#10b98115", color: "#10b981" }}>
+                    <CheckCircle size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.approved}</h3>
+                <h4>Approved</h4>
+                <p>KES {bursaryStats.totalAmountApproved?.toLocaleString() || 0}</p>
+              </motion.div>
+            </>
+          )}
         </section>
 
         <section className="charts-grid">
@@ -191,7 +246,7 @@ function Dashboard({ onLogout }) {
                 <XAxis dataKey="month" stroke="#64748b" />
                 <YAxis stroke="#64748b" />
                 <Tooltip />
-                <Line type="monotone" dataKey="complaints" stroke="#006B3C" strokeWidth={3} dot={{ r: 4 }} />
+                <Line type="monotone" dataKey="complaints" stroke="#7c3aed" strokeWidth={3} dot={{ r: 4 }} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -202,7 +257,7 @@ function Dashboard({ onLogout }) {
                 <XAxis dataKey="status" stroke="#64748b" />
                 <YAxis stroke="#64748b" />
                 <Tooltip />
-                <Bar dataKey="count" fill="#0E8A4B" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="count" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>

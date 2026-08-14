@@ -27,6 +27,33 @@ async function runSettingsMigration(connection) {
   }
 }
 
+async function runBursaryMigration(connection) {
+  try {
+    // Select the database first
+    await connection.query(`USE \`${process.env.DB_NAME}\``);
+
+    const [tables] = await connection.query(
+      "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN ('bursary_applications', 'bursary_application_documents', 'bursary_application_history')",
+      [process.env.DB_NAME]
+    );
+    const existingTables = tables.map((t) => t.TABLE_NAME);
+
+    if (!existingTables.includes("bursary_applications")) {
+      console.log("Running bursary migration...");
+      const migrationSql = fs.readFileSync(
+        path.join(__dirname, "../../database/migrate_bursary.sql"),
+        "utf8"
+      );
+      await connection.query(migrationSql);
+      console.log("Bursary migration completed.");
+    } else {
+      console.log("Bursary tables already exist.");
+    }
+  } catch (err) {
+    console.error("Bursary migration error:", err.message);
+  }
+}
+
 /**
  * Ensures the target database exists and is populated with the schema.
  * Retries connecting to MySQL so the server can be started before XAMPP
@@ -69,6 +96,9 @@ async function initDatabase() {
 
       // Run settings migration
       await runSettingsMigration(connection);
+
+      // Run bursary migration
+      await runBursaryMigration(connection);
 
       await connection.end();
 

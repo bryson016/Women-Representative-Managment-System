@@ -70,7 +70,7 @@ function MeetingSidebar({ meetings }) {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.25rem" }}>
                     <div style={{
                       width: "2rem", height: "2rem", borderRadius: "0.5rem",
-                      background: "#e8f6ee", color: "#0e8a4b", display: "grid",
+                      background: "#f5f3ff", color: "#8b5cf6", display: "grid",
                       placeItems: "center", flexShrink: 0,
                     }}>
                       <div style={{ textAlign: "center", lineHeight: 1.05 }}>

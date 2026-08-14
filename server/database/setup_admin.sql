@@ -6,15 +6,12 @@
 
 USE ward_management;
 
--- Password for all users below: Admin@123
--- Password hash: $2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6
-
 -- 1. ADMIN USER
 INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_number, is_active)
 VALUES (
   'System Administrator',
   'admin',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'admin',
   'Westlands',
   'admin@ward.gov.ke',
@@ -27,7 +24,7 @@ INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_
 VALUES (
   'Staff User',
   'staff',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'staff',
   'Westlands',
   'staff@ward.gov.ke',
@@ -40,7 +37,7 @@ INSERT INTO users (full_name, username, password_hash, role, ward, email, phone_
 VALUES (
   'John Citizen',
   'citizen',
-  '$2b$10$rR.yJxYNESPKppuGLUDXg.5/WMHJUQE847r79lMNtcoEEsYQE/iR6',
+  NULL,
   'citizen',
   'Westlands',
   'citizen@ward.gov.ke',

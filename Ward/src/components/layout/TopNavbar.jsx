@@ -6,7 +6,7 @@ function TopNavbar({
   onToggleTheme,
   isDarkMode,
   onOpenMobileMenu,
-  userName = "Hon. Gabriel Kithaka",
+  userName = "Hon. Nancy Wangari",
   userRole = "Ward Administrator",
 }) {
   return (

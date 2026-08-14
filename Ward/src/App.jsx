@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import {
   Building2,
   CircleAlert,
-  Eye,
-  EyeOff,
   FolderKanban,
   Landmark,
   ShieldCheck,
@@ -40,6 +38,7 @@ function RoleBasedRedirect() {
 
 const Citizens = lazy(() => import("./pages/Citizens"));
 const Complaints = lazy(() => import("./pages/Complaints"));
+const BursaryApplications = lazy(() => import("./pages/BursaryApplications"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Meetings = lazy(() => import("./pages/Meetings"));
 const Staff = lazy(() => import("./pages/Staff"));
@@ -60,13 +59,13 @@ const CitizenProfile = lazy(() => import("./pages/citizens/CitizenProfile"));
 const FEATURE_ITEMS = [
   {
     icon: Users,
-    title: "Citizen Records",
-    description: "Maintain accurate and secure citizen profiles for informed local administration.",
+    title: "WOMEN Records",
+    description: "Maintain accurate and secure Women profiles for informed local administration.",
   },
   {
     icon: FolderKanban,
     title: "Development Projects",
-    description: "Track planning, budget utilization, and implementation progress efficiently.",
+    description: "Track planning, budget utilization, beneficiaries and implementation progress efficiently.",
   },
   {
     icon: CircleAlert,
@@ -104,20 +103,14 @@ function LoginPage() {
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
-    password: "",
-    confirmPassword: "",
     remember: false,
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState("");
   const [touched, setTouched] = useState({
     fullName: false,
     username: false,
-    password: false,
-    confirmPassword: false,
   });
 
   const isSignUp = mode === "signup";
@@ -133,20 +126,6 @@ function LoginPage() {
       next.username = "Username is required.";
     } else if (!USERNAME_REGEX.test(formData.username.trim())) {
       next.username = "Use 4-20 characters: letters, numbers, ., _, -";
-    }
-
-    if (!formData.password) {
-      next.password = "Password is required.";
-    } else if (formData.password.length < 6) {
-      next.password = "Password must be at least 6 characters.";
-    }
-
-    if (isSignUp) {
-      if (!formData.confirmPassword) {
-        next.confirmPassword = "Please confirm your password.";
-      } else if (formData.confirmPassword !== formData.password) {
-        next.confirmPassword = "Passwords do not match.";
-      }
     }
 
     return next;
@@ -172,8 +151,6 @@ function LoginPage() {
     setTouched({
       fullName: isSignUp,
       username: true,
-      password: true,
-      confirmPassword: isSignUp,
     });
   };
 
@@ -192,7 +169,6 @@ function LoginPage() {
         await registerRequest({
           username: formData.username.trim(),
           fullName: formData.fullName.trim(),
-          password: formData.password,
         });
 
         // Requirement: on signup success, stay on login screen (no auto-login)
@@ -201,24 +177,17 @@ function LoginPage() {
         setTouched({
           fullName: false,
           username: false,
-          password: false,
-          confirmPassword: false,
         });
         setFormData({
           fullName: "",
           username: "",
-          password: "",
-          confirmPassword: "",
           remember: false,
         });
-        setShowPassword(false);
-        setShowConfirmPassword(false);
         return;
       }
 
       const data = await loginRequest({
         username: formData.username.trim(),
-        password: formData.password,
       });
 
       login(data);
@@ -233,7 +202,7 @@ function LoginPage() {
       if (isSignUp && error?.response?.status === 409) {
         setAuthError("Username already exists.");
       } else if (!isSignUp && error?.response?.status === 401) {
-        setAuthError("Invalid username or password.");
+        setAuthError("Invalid username.");
       } else {
         setAuthError(isSignUp ? "Unable to create account. Please try again." : "Unable to sign in. Please try again.");
       }
@@ -241,7 +210,6 @@ function LoginPage() {
       setIsSubmitting(false);
     }
   };
-  
 
   const switchMode = () => {
     setMode((prev) => (prev === "signin" ? "signup" : "signin"));
@@ -249,11 +217,7 @@ function LoginPage() {
     setTouched({
       fullName: false,
       username: false,
-      password: false,
-      confirmPassword: false,
     });
-    setShowPassword(false);
-    setShowConfirmPassword(false);
   };
 
   if (isAuthenticated) {
@@ -280,7 +244,7 @@ function LoginPage() {
             </div>
             <div className="login-logo-caption">
               <span className="login-logo-caption-main">Advenware</span>
-              <span className="login-logo-caption-sub">Ward Management System</span>
+              <span className="login-logo-caption-sub">Women Repsentative system</span>
             </div>
           </div>
 
@@ -289,7 +253,7 @@ function LoginPage() {
             <span>Kenya County e-Service Portal</span>
           </div>
 
-          <h1>Women Repsentative Managment System</h1>
+          <h1>Women Repsentative system</h1>
           <p className="subtitle">Digital Governance for Efficient Ward Administration</p>
 
           <div className="feature-list">
@@ -338,7 +302,6 @@ function LoginPage() {
                 ) : null}
               </div>
             ) : null}
-            
 
             <div className="form-group">
               <label htmlFor="username">Username</label>
@@ -361,72 +324,6 @@ function LoginPage() {
               ) : null}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="password-wrap">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={isSignUp ? "new-password" : "current-password"}
-                  value={formData.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  aria-invalid={Boolean(touched.password && errors.password)}
-                  aria-describedby={touched.password && errors.password ? "password-error" : undefined}
-                  placeholder={isSignUp ? "Create a password" : "Enter your password"}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {touched.password && errors.password ? (
-                <p id="password-error" className="error-text" role="alert">
-                  {errors.password}
-                </p>
-              ) : null}
-            </div>
-
-            {isSignUp ? (
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm Password</label>
-                <div className="password-wrap">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    autoComplete="new-password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    aria-invalid={Boolean(touched.confirmPassword && errors.confirmPassword)}
-                    aria-describedby={
-                      touched.confirmPassword && errors.confirmPassword ? "confirmPassword-error" : undefined
-                    }
-                    placeholder="Re-enter password"
-                  />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-                  >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-                {touched.confirmPassword && errors.confirmPassword ? (
-                  <p id="confirmPassword-error" className="error-text" role="alert">
-                    {errors.confirmPassword}
-                  </p>
-                ) : null}
-              </div>
-            ) : null}
-
             <div className="form-row">
               <label className="remember-wrap" htmlFor="remember">
                 <input
@@ -440,9 +337,10 @@ function LoginPage() {
               </label>
 
               {!isSignUp ? (
-                <a href="#" className="forgot-link">
-                  Forgot Password?
-                </a>
+                <span className="secure-note">
+                  <ShieldCheck size={14} />
+                  Secure access
+                </span>
               ) : (
                 <span className="secure-note">
                   <ShieldCheck size={14} />
@@ -471,7 +369,7 @@ function LoginPage() {
             </button>
 
             <button type="button" className="switch-mode-btn" onClick={switchMode}>
-              {isSignUp ? "Already have an account? Sign in" : "Don’t have an account? Create one"}
+              {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Create one"}
             </button>
           </form>
 
@@ -512,6 +410,16 @@ function App() {
           <ProtectedRoute>
             <Suspense fallback={<div className="loading-screen">Loading...</div>}>
               <Complaints />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bursary"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <BursaryApplications onLogout={logout} />
             </Suspense>
           </ProtectedRoute>
         }
@@ -593,6 +501,26 @@ function App() {
           <CitizenProtectedRoute>
             <Suspense fallback={<div className="loading-screen">Loading...</div>}>
               <CitizenComplaints />
+            </Suspense>
+          </CitizenProtectedRoute>
+        }
+      />
+      <Route
+        path="/citizen/bursary/apply"
+        element={
+          <CitizenProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <CitizenBursaryForm />
+            </Suspense>
+          </CitizenProtectedRoute>
+        }
+      />
+      <Route
+        path="/citizen/bursary/tracking"
+        element={
+          <CitizenProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <CitizenBursaryTracking />
             </Suspense>
           </CitizenProtectedRoute>
         }

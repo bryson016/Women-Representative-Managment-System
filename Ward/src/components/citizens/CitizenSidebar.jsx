@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Megaphone,
   Bell,
+  GraduationCap,
   User,
   LogOut,
   Menu,
@@ -19,6 +20,7 @@ const ICON_MAP = {
   CalendarDays,
   Megaphone,
   Bell,
+  GraduationCap,
   User,
   LogOut,
 };
@@ -26,6 +28,7 @@ const ICON_MAP = {
 const sidebarItems = [
   { id: "dashboard", label: "Dashboard", icon: "LayoutDashboard" },
   { id: "complaints", label: "My Complaints", icon: "CircleAlert" },
+  { id: "bursary", label: "Bursary Applications", icon: "GraduationCap" },
   { id: "projects", label: "Projects", icon: "FolderKanban" },
   { id: "meetings", label: "Meetings", icon: "CalendarDays" },
   { id: "announcements", label: "Announcements", icon: "Megaphone" },

@@ -402,20 +402,20 @@ const citizens = [
 ];
 
 export const villages = [
-  "CORNER 1",
-  "CORNER 2",
-  "CORNER 3",
-  "KIGANJO",
-  "KIANGOMBE",
-  "BURUDIKA",
-  "G5",
-  "BLUE REBELLION",
-  "JUA KALI",
-  "MALI",
-  "MAKONGENI",
-  "KISII",
-  "SALAMA",
-  "LANDLESS"
+  "NAROK NORTH",
+  "NAROK SOUTH",
+  "NAROK EAST",
+  "EMURUA DIKIR",
+  "NAROK WEST",
+  "KILGORIS",
+  "KEYIAN",
+  "LOLGORIAN",
+  "OLOMASANI",
+  "MOGONDO",
+  "NAROK TOWN",
+  "KAPSAISIAN",
+  "MOSIRO",
+  "ONGATA"
 ];
 
 export const occupations = [

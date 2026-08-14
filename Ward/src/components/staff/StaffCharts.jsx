@@ -26,10 +26,10 @@ function StaffCharts({ staff }) {
   const maxVillage = Math.max(...Object.values(villageData), 1);
 
   const departmentColors = {
-    "Administration": "#006b3c",
+    "Administration": "#7c3aed",
     "Health Services": "#b91c1c",
-    "Public Works": "#d4a017",
-    "Water & Sanitation": "#0e8a4b",
+    "Public Works": "#a78bfa",
+    "Water & Sanitation": "#8b5cf6",
     "Education": "#1d4ed8",
     "Security": "#7c3aed",
     "Community Development": "#f59e0b",
@@ -37,7 +37,7 @@ function StaffCharts({ staff }) {
   };
 
   const statusColors = {
-    "On Duty": "#166534",
+    "On Duty": "#6d28d9",
     "Off Duty": "#64748b",
     "On Leave": "#f59e0b",
     "Field Visit": "#1d4ed8",
@@ -66,7 +66,7 @@ function StaffCharts({ staff }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxDepartment) * 100}%`,
-                  background: departmentColors[dept] || "#006b3c",
+                  background: departmentColors[dept] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -97,7 +97,7 @@ function StaffCharts({ staff }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / staff.length) * 100}%`,
-                  background: statusColors[status] || "#006b3c",
+                  background: statusColors[status] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -128,7 +128,7 @@ function StaffCharts({ staff }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / Math.max(...Object.values(roleData))) * 100}%`,
-                  background: "#0e8a4b",
+                  background: "#8b5cf6",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -159,7 +159,7 @@ function StaffCharts({ staff }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxVillage) * 100}%`,
-                  background: "#d4a017",
+                  background: "#a78bfa",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -190,7 +190,7 @@ function StaffCharts({ staff }) {
             <div style={{
               height: "100%",
               width: `${avgPerformance}%`,
-              background: avgPerformance >= 90 ? "#166534" : avgPerformance >= 80 ? "#0e8a4b" : "#f59e0b",
+              background: avgPerformance >= 90 ? "#6d28d9" : avgPerformance >= 80 ? "#8b5cf6" : "#f59e0b",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />
@@ -220,7 +220,7 @@ function StaffCharts({ staff }) {
             </div>
           </div>
           <div className="quick-stat-item">
-            <div className="quick-stat-icon" style={{ background: "#ecfdf3", color: "#166534" }}><TrendingUp size={16} /></div>
+            <div className="quick-stat-icon" style={{ background: "#f5f3ff", color: "#6d28d9" }}><TrendingUp size={16} /></div>
             <div className="quick-stat-info">
               <span className="quick-stat-value">{onDutyCount}</span>
               <span className="quick-stat-label">On Duty / Field</span>

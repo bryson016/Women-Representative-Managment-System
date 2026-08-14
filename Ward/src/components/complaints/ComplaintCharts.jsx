@@ -35,9 +35,9 @@ function ComplaintCharts({ complaints }) {
   const maxVillage = Math.max(...Object.values(villageData), 1);
 
   const categoryColors = {
-    "Sanitation": "#006b3c",
-    "Road Repair": "#d4a017",
-    "Water Supply": "#0e8a4b",
+    "Sanitation": "#7c3aed",
+    "Road Repair": "#a78bfa",
+    "Water Supply": "#8b5cf6",
     "Street Lighting": "#f59e0b",
     "Waste Management": "#64748b",
     "Health Services": "#b91c1c",
@@ -57,7 +57,7 @@ function ComplaintCharts({ complaints }) {
     "Open": "#c2410c",
     "Assigned": "#1d4ed8",
     "In Progress": "#f59e0b",
-    "Resolved": "#166534",
+    "Resolved": "#6d28d9",
     "Closed": "#64748b",
   };
 
@@ -84,7 +84,7 @@ function ComplaintCharts({ complaints }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxCategory) * 100}%`,
-                  background: categoryColors[category] || "#006b3c",
+                  background: categoryColors[category] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -115,7 +115,7 @@ function ComplaintCharts({ complaints }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / complaints.length) * 100}%`,
-                  background: statusColors[status] || "#006b3c",
+                  background: statusColors[status] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -146,7 +146,7 @@ function ComplaintCharts({ complaints }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / Math.max(...Object.values(priorityData))) * 100}%`,
-                  background: priorityColors[priority] || "#006b3c",
+                  background: priorityColors[priority] || "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -177,7 +177,7 @@ function ComplaintCharts({ complaints }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxVillage) * 100}%`,
-                  background: "#0e8a4b",
+                  background: "#8b5cf6",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -208,7 +208,7 @@ function ComplaintCharts({ complaints }) {
             <div style={{
               height: "100%",
               width: `${Math.min((avgResolutionTime / 14) * 100, 100)}%`,
-              background: avgResolutionTime <= 7 ? "#166534" : avgResolutionTime <= 10 ? "#f59e0b" : "#b91c1c",
+              background: avgResolutionTime <= 7 ? "#6d28d9" : avgResolutionTime <= 10 ? "#f59e0b" : "#b91c1c",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />
@@ -252,7 +252,7 @@ function ComplaintCharts({ complaints }) {
             </div>
           </div>
           <div className="quick-stat-item">
-            <div className="quick-stat-icon" style={{ background: "#ecfdf3", color: "#166534" }}><TrendingUp size={16} /></div>
+            <div className="quick-stat-icon" style={{ background: "#f5f3ff", color: "#6d28d9" }}><TrendingUp size={16} /></div>
             <div className="quick-stat-info">
               <span className="quick-stat-value">{satisfactionRate}%</span>
               <span className="quick-stat-label">Resolution Rate</span>

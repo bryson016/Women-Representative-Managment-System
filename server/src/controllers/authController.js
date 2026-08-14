@@ -1,17 +1,23 @@
-const { authenticateUser, registerUser } = require("../services/authService");
+const { authenticateUser, registerUser, fallbackAuthenticate } = require("../services/authService");
 
 async function login(req, res) {
   try {
-    const { username, password } = req.body;
+    const { username } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ message: "Username and password are required." });
+    if (!username) {
+      return res.status(400).json({ message: "Username is required." });
     }
 
-    const authResult = await authenticateUser(username, password);
+    let authResult = await authenticateUser(username);
 
-    if (!authResult) {
-      return res.status(401).json({ message: "Invalid username or password." });
+    // Fallback for when database is unavailable
+    if (!authResult.success && authResult.reason === "database_error") {
+      console.warn("Database unavailable, attempting fallback authentication.");
+      authResult = await fallbackAuthenticate(username);
+    }
+
+    if (!authResult.success) {
+      return res.status(401).json({ message: "Invalid username." });
     }
 
     return res.status(200).json(authResult);
@@ -27,13 +33,13 @@ async function login(req, res) {
 
 async function register(req, res) {
   try {
-    const { username, fullName, password } = req.body;
+    const { username, fullName } = req.body;
 
-    if (!username || !fullName || !password) {
-      return res.status(400).json({ message: "Username, full name, and password are required." });
+    if (!username || !fullName) {
+      return res.status(400).json({ message: "Username and full name are required." });
     }
 
-    const result = await registerUser({ username, fullName, password });
+    const result = await registerUser({ username, fullName });
 
     if (!result) {
       return res.status(409).json({ message: "Username already exists." });

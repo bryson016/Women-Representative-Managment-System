@@ -236,7 +236,7 @@ function MeetingDetails({ meeting, onBack }) {
                   <div style={{
                     height: "100%",
                     width: `${attendanceRate}%`,
-                    background: attendanceRate >= 70 ? "#0e8a4b" : attendanceRate >= 40 ? "#d4a017" : "#b91c1c",
+                    background: attendanceRate >= 70 ? "#8b5cf6" : attendanceRate >= 40 ? "#a78bfa" : "#b91c1c",
                     borderRadius: "999px",
                     transition: "width 0.5s ease",
                   }} />
@@ -252,7 +252,7 @@ function MeetingDetails({ meeting, onBack }) {
                     <div style={{
                       height: "100%",
                       width: `${totalActions > 0 ? (completedActions / totalActions) * 100 : 0}%`,
-                      background: "#0e8a4b",
+                      background: "#8b5cf6",
                       borderRadius: "999px",
                       transition: "width 0.5s ease",
                     }} />

@@ -3,7 +3,7 @@ CREATE TABLE `users` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `full_name` VARCHAR(255) NOT NULL,
     `username` VARCHAR(100) NOT NULL,
-    `password_hash` VARCHAR(255) NOT NULL,
+    `password_hash` VARCHAR(255) DEFAULT NULL,
     `role` ENUM('admin', 'officer', 'staff', 'citizen') NOT NULL DEFAULT 'citizen',
     `ward` VARCHAR(100) NULL,
     `email` VARCHAR(255) NULL,

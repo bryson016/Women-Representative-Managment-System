@@ -10,6 +10,7 @@ import {
   FileText,
   TrendingUp,
   Clock,
+  GraduationCap,
 } from "lucide-react";
 import CitizenLayout from "../../components/citizens/CitizenLayout";
 import {
@@ -105,6 +106,9 @@ function CitizenDashboard() {
         break;
       case "complaints":
         navigate("/citizen/complaints");
+        break;
+      case "bursary":
+        navigate("/citizen/bursary/tracking");
         break;
       case "projects":
         navigate("/citizen/projects");
@@ -206,9 +210,13 @@ function CitizenDashboard() {
           <PlusCircle size={18} />
           <span>Report a Complaint</span>
         </button>
-        <button className="gov-btn gov-btn-secondary" onClick={() => navigate("/citizen/complaints")}>
+        <button className="gov-btn gov-btn-secondary" onClick={() => navigate("/citizen/bursary/apply")}>
+          <GraduationCap size={18} />
+          <span>Apply for Bursary</span>
+        </button>
+        <button className="gov-btn gov-btn-secondary" onClick={() => navigate("/citizen/bursary/tracking")}>
           <FileText size={18} />
-          <span>View My Complaints</span>
+          <span>My Bursary Applications</span>
         </button>
       </motion.section>
 

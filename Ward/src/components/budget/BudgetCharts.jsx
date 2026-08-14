@@ -13,7 +13,7 @@ import {
   YAxis,
 } from "recharts";
 
-const PIE_COLORS = ["#006B3C", "#0E8A4B", "#2D936C", "#65A30D", "#C9A227", "#15803D", "#4D7C0F", "#047857"];
+const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
 
 function BudgetCharts({ categories, distribution, summary }) {
   const formatKES = (amount) => {
@@ -42,10 +42,10 @@ function BudgetCharts({ categories, distribution, summary }) {
         <head><title>Ward Budget Report</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 20px; }
-          h1 { color: #006b3c; }
+          h1 { color: #7c3aed; }
           table { width: 100%; border-collapse: collapse; margin-top: 10px; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-          th { background: #006b3c; color: white; }
+          th { background: #7c3aed; color: white; }
         </style>
         </head>
         <body>
@@ -88,8 +88,8 @@ function BudgetCharts({ categories, distribution, summary }) {
             <YAxis stroke="#64748b" fontSize={10} />
             <Tooltip formatter={(value) => `KES ${value}M`} />
             <Legend wrapperStyle={{ fontSize: "0.7rem" }} />
-            <Bar dataKey="allocated" name="Allocated (M)" fill="#006B3C" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="utilized" name="Utilized (M)" fill="#d4a017" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="allocated" name="Allocated (M)" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="utilized" name="Utilized (M)" fill="#a78bfa" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </motion.div>
