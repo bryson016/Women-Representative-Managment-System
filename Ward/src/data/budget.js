@@ -4,7 +4,7 @@ export const budgetSummary = {
   utilized: 98500000,
   remaining: 86500000,
   financialYear: "2026/2027",
-  county: "Nairobi",
+  county: "Narok",
   status: "Active",
   health: 72,
 };
@@ -29,7 +29,7 @@ export const budgetStats = [
   {
     id: "utilized",
     title: "Budget Utilized",
-    value: "KES 98,500,000",
+    value: "KES 97,500,000",
     description: "53.2% Utilized",
     trend: "+5.1% this quarter",
     icon: "TrendingUp",
@@ -53,6 +53,7 @@ export const budgetCategories = [
   { name: "Health", approved: 22000000, allocated: 17000000, utilized: 11800000 },
   { name: "Agriculture", approved: 15000000, allocated: 11000000, utilized: 7200000 },
   { name: "Security", approved: 28000000, allocated: 19000000, utilized: 16800000 },
+  { name: "Busary", approved: 300000000, allocated: 10000000, utilized: 5000000},
 ];
 
 export const budgetDistribution = [
@@ -64,6 +65,7 @@ export const budgetDistribution = [
   { name: "Health", value: 12 },
   { name: "Agriculture", value: 8 },
   { name: "Security", value: 14 },
+  { name: "Busary", value: 5},
 ];
 
 export const budgetTable = [
@@ -76,6 +78,7 @@ export const budgetTable = [
   { category: "Agriculture", approved: 15000000, allocated: 11000000, utilized: 7200000, status: "Low Utilization" },
   { category: "Youth Programs", approved: 12000000, allocated: 9000000, utilized: 6800000, status: "On Track" },
   { category: "Security", approved: 28000000, allocated: 19000000, utilized: 16800000, status: "Nearing Limit" },
+  { category: "Busary", approved: 53700000, allocated: 10000000, utilized: 12000000, status: "Low Utilization"},
 ];
 
 export const recentTransactions = [
@@ -84,6 +87,8 @@ export const recentTransactions = [
   { title: "School Renovation", amount: 2800000, date: "Jul 18, 2026", type: "utilized" },
   { title: "Health Centre Equipment", amount: 1900000, date: "Jul 16, 2026", type: "utilized" },
   { title: "Youth Empowerment Funding", amount: 1450000, date: "Jul 14, 2026", type: "utilized" },
+  { title: "Busary Empowerment Funding", amount: 3000000, date: "August 1 2026", type:"utilized"},
+
 ];
 
 export const budgetAlerts = [
@@ -133,4 +138,5 @@ export const leastUtilizedFunds = [
   { name: "Education", amount: 9200000 },
   { name: "Administration", amount: 9800000 },
   { name: "Health", amount: 11800000 },
+  { name: "Busary", amount: 4000000}
 ];

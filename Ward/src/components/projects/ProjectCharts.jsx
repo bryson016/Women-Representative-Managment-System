@@ -15,7 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#B91C1C"];
+const PIE_COLORS = ["#7c3aed", "#7c3aed", "#2D936C", "#65A30D", "#C9A227", "#B91C1C"];
 
 function ProjectCharts({ projects }) {
   // Calculate chart data
@@ -47,7 +47,7 @@ function ProjectCharts({ projects }) {
 
   const categoryColors = {
     "Roads & Transport": "#7c3aed",
-    "Water & Sanitation": "#8b5cf6",
+    "Water & Sanitation": "#7c3aed",
     "Health Services": "#b91c1c",
     "Education Support": "#1d4ed8",
     "Public Markets": "#a78bfa",
@@ -59,7 +59,7 @@ function ProjectCharts({ projects }) {
   const statusColors = {
     "Planning": "#f59e0b",
     "Approved": "#1d4ed8",
-    "Ongoing": "#8b5cf6",
+    "Ongoing": "#7c3aed",
     "Delayed": "#dc2626",
     "Completed": "#6d28d9",
     "Cancelled": "#64748b",
@@ -200,7 +200,7 @@ function ProjectCharts({ projects }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxWard) * 100}%`,
-                  background: "#8b5cf6",
+                  background: "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />

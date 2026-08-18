@@ -6,6 +6,7 @@ const settingsRoutes = require("./routes/settingsRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const citizenRoutes = require("./routes/citizenRoutes");
 const bursaryRoutes = require("./routes/bursaryRoutes");
+const imageRoutes = require("./routes/imageRoutes");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
 app.use("/api/protected", settingsRoutes);
 app.use("/api/protected", uploadRoutes);
+app.use("/api/protected", imageRoutes);
 app.use("/api/citizen", citizenRoutes);
 app.use("/api/bursary", bursaryRoutes);
 

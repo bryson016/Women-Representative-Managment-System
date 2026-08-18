@@ -13,7 +13,7 @@ import {
   YAxis,
 } from "recharts";
 
-const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
+const PIE_COLORS = ["#7c3aed", "#7c3aed", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
 
 function BudgetCharts({ categories, distribution, summary }) {
   const formatKES = (amount) => {

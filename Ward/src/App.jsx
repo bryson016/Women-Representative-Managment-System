@@ -9,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import advenwareLogo from "./assets/Advenware.jpeg";
+import courtOfArms from "./assets/court of arms.PNG.png";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { loginRequest } from "./services/authService";
@@ -39,12 +40,18 @@ function RoleBasedRedirect() {
 const Citizens = lazy(() => import("./pages/Citizens"));
 const Complaints = lazy(() => import("./pages/Complaints"));
 const BursaryApplications = lazy(() => import("./pages/BursaryApplications"));
+const Beneficiaries = lazy(() => import("./pages/Beneficiaries"));
+const Payments = lazy(() => import("./pages/Payments"));
+const BursaryPrograms = lazy(() => import("./pages/BursaryPrograms"));
+const Notifications = lazy(() => import("./pages/Notifications"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Meetings = lazy(() => import("./pages/Meetings"));
 const Staff = lazy(() => import("./pages/Staff"));
 const Budget = lazy(() => import("./pages/Budget"));
 const Report = lazy(() => import("./pages/Report"));
 const Settings = lazy(() => import("./pages/Settings"));
+const Images = lazy(() => import("./pages/Images"));
+const UploadImage = lazy(() => import("./pages/UploadImage"));
 
 // Citizen Dashboard pages
 const CitizenDashboard = lazy(() => import("./pages/citizens/CitizenDashboard"));
@@ -55,6 +62,8 @@ const CitizenMeetings = lazy(() => import("./pages/citizens/CitizenMeetings"));
 const CitizenAnnouncements = lazy(() => import("./pages/citizens/CitizenAnnouncements"));
 const CitizenNotifications = lazy(() => import("./pages/citizens/CitizenNotifications"));
 const CitizenProfile = lazy(() => import("./pages/citizens/CitizenProfile"));
+const CitizenBursaryForm = lazy(() => import("./pages/citizens/CitizenBursaryForm"));
+const CitizenBursaryTracking = lazy(() => import("./pages/citizens/CitizenBursaryTracking"));
 
 const FEATURE_ITEMS = [
   {
@@ -272,6 +281,14 @@ function LoginPage() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
+          <div className="login-court-of-arms">
+            <img
+              src={courtOfArms}
+              alt="Kenya Coat of Arms"
+              className="court-of-arms-img"
+              loading="eager"
+            />
+          </div>
           <h2>{isSignUp ? "Create Account" : "Welcome Back"}</h2>
           <p className="card-subtitle">
             {isSignUp
@@ -395,6 +412,26 @@ function App() {
         }
       />
       <Route
+        path="/images"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <Images onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/upload-image"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <UploadImage onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/citizens"
         element={
           <ProtectedRoute>
@@ -420,6 +457,46 @@ function App() {
           <ProtectedRoute>
             <Suspense fallback={<div className="loading-screen">Loading...</div>}>
               <BursaryApplications onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/beneficiaries"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <Beneficiaries onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payments"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <Payments onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bursary-programs"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <BursaryPrograms onLogout={logout} />
+            </Suspense>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+              <Notifications onLogout={logout} />
             </Suspense>
           </ProtectedRoute>
         }

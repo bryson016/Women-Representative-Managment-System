@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-function QuickActionCard({ label, icon: Icon, index = 0 }) {
+function QuickActionCard({ label, icon: Icon, index = 0, onClick }) {
   return (
     <motion.button
       className="quick-action-card"
@@ -9,6 +9,7 @@ function QuickActionCard({ label, icon: Icon, index = 0 }) {
       transition={{ delay: index * 0.05, duration: 0.24 }}
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
+      onClick={onClick}
     >
       <div className="quick-icon">{Icon ? <Icon size={18} /> : null}</div>
       <span>{label}</span>

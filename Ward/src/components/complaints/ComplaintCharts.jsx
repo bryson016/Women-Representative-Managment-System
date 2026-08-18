@@ -37,7 +37,7 @@ function ComplaintCharts({ complaints }) {
   const categoryColors = {
     "Sanitation": "#7c3aed",
     "Road Repair": "#a78bfa",
-    "Water Supply": "#8b5cf6",
+    "Water Supply": "#7c3aed",
     "Street Lighting": "#f59e0b",
     "Waste Management": "#64748b",
     "Health Services": "#b91c1c",
@@ -177,7 +177,7 @@ function ComplaintCharts({ complaints }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxVillage) * 100}%`,
-                  background: "#8b5cf6",
+                  background: "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />

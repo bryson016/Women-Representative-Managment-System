@@ -35,10 +35,10 @@ const DOCUMENT_TYPES = [
 // HELPER FUNCTIONS
 // ============================================================
 
-function generateApplicationNumber() {
+async function generateApplicationNumber() {
   const year = new Date().getFullYear();
   const prefix = `BUR-${year}`;
-  const [countRows] = pool.execute(
+  const [countRows] = await pool.execute(
     `SELECT COUNT(*) AS count FROM bursary_applications WHERE YEAR(created_at) = ?`,
     [year]
   );
@@ -412,7 +412,7 @@ async function createApplication(req, res) {
       return res.status(400).json({ message: "Amount requested cannot exceed outstanding balance." });
     }
 
-    const applicationNumber = generateApplicationNumber();
+    const applicationNumber = await generateApplicationNumber();
 
     const [result] = await pool.execute(
       `INSERT INTO bursary_applications 
@@ -491,6 +491,432 @@ async function createApplication(req, res) {
   } catch (error) {
     console.error("Create bursary application error:", error);
     return res.status(500).json({ message: "Failed to submit application." });
+  }
+}
+
+// ============================================================
+// ADMIN: DELETE APPLICATION
+// ============================================================
+
+async function deleteApplication(req, res) {
+  try {
+    const applicationId = req.params.id;
+    const userRole = req.user?.role?.toLowerCase();
+
+    // Only admin can delete applications
+    if (userRole !== "admin") {
+      return res.status(403).json({ message: "Only administrators can delete applications." });
+    }
+
+    // Get application
+    const [appRows] = await pool.execute(
+      `SELECT * FROM bursary_applications WHERE id = ? LIMIT 1`,
+      [applicationId]
+    );
+
+    if (appRows.length === 0) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    // Delete related records (documents, history will cascade)
+    await pool.execute(
+      `DELETE FROM bursary_application_documents WHERE application_id = ?`,
+      [applicationId]
+    );
+    await pool.execute(
+      `DELETE FROM bursary_application_history WHERE application_id = ?`,
+      [applicationId]
+    );
+    await pool.execute(
+      `DELETE FROM bursary_applications WHERE id = ?`,
+      [applicationId]
+    );
+
+    return res.status(200).json({ message: "Application deleted successfully." });
+  } catch (error) {
+    console.error("Delete bursary application error:", error);
+    return res.status(500).json({ message: "Failed to delete application." });
+  }
+}
+
+// ============================================================
+// ADMIN: UPDATE APPLICATION (edit details)
+// ============================================================
+
+async function updateApplication(req, res) {
+  try {
+    const applicationId = req.params.id;
+    const userRole = req.user?.role?.toLowerCase();
+
+    // Get current application
+    const [appRows] = await pool.execute(
+      `SELECT * FROM bursary_applications WHERE id = ? LIMIT 1`,
+      [applicationId]
+    );
+
+    if (appRows.length === 0) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    const application = appRows[0];
+
+    // Only admin/staff can edit, or citizen can edit their own draft
+    if (userRole !== "admin" && userRole !== "officer" && userRole !== "staff") {
+      if (application.user_id !== req.user.id) {
+        return res.status(403).json({ message: "You can only edit your own applications." });
+      }
+      if (application.status !== "Draft") {
+        return res.status(400).json({ message: "Only draft applications can be edited." });
+      }
+    }
+
+    const {
+      institutionName,
+      institutionType,
+      courseOrForm,
+      yearOfStudy,
+      admissionNumber,
+      academicYear,
+      studentRegistrationNumber,
+      parentFullName,
+      parentRelationship,
+      parentPhone,
+      parentOccupation,
+      numberOfDependants,
+      householdMonthlyIncome,
+      totalFees,
+      amountPaid,
+      amountRequested,
+      previousBursaryReceived,
+      previousBursaryAmount,
+      otherFinancialAssistance,
+      reasonForApplication,
+      county,
+      constituency,
+      residentialAddress,
+    } = req.body;
+
+    // Calculate outstanding balance
+    const totalFeesNum = parseFloat(totalFees || application.total_fees);
+    const amountPaidNum = parseFloat(amountPaid || application.amount_paid);
+    const outstandingBalance = totalFeesNum - amountPaidNum;
+
+    await pool.execute(
+      `UPDATE bursary_applications SET
+        residential_address = ?, county = ?, constituency = ?,
+        institution_name = ?, institution_type = ?, course_or_form = ?, year_of_study = ?,
+        admission_number = ?, academic_year = ?, student_registration_number = ?,
+        parent_full_name = ?, parent_relationship = ?, parent_phone = ?, parent_occupation = ?,
+        number_of_dependants = ?, household_monthly_income = ?,
+        total_fees = ?, amount_paid = ?, outstanding_balance = ?, amount_requested = ?,
+        previous_bursary_received = ?, previous_bursary_amount = ?,
+        other_financial_assistance = ?, reason_for_application = ?,
+        updated_at = NOW()
+       WHERE id = ?`,
+      [
+        residentialAddress || application.residential_address,
+        county || application.county,
+        constituency || application.constituency,
+        institutionName || application.institution_name,
+        institutionType || application.institution_type,
+        courseOrForm || application.course_or_form,
+        yearOfStudy || application.year_of_study,
+        admissionNumber || application.admission_number,
+        academicYear || application.academic_year,
+        studentRegistrationNumber || application.student_registration_number,
+        parentFullName || application.parent_full_name,
+        parentRelationship || application.parent_relationship,
+        parentPhone || application.parent_phone,
+        parentOccupation || application.parent_occupation,
+        parseInt(numberOfDependants) || application.number_of_dependants,
+        parseFloat(householdMonthlyIncome) || application.household_monthly_income,
+        totalFeesNum,
+        amountPaidNum,
+        outstandingBalance,
+        parseFloat(amountRequested) || application.amount_requested,
+        previousBursaryReceived || application.previous_bursary_received,
+        previousBursaryAmount ? parseFloat(previousBursaryAmount) : application.previous_bursary_amount,
+        otherFinancialAssistance || application.other_financial_assistance,
+        reasonForApplication || application.reason_for_application,
+        applicationId,
+      ]
+    );
+
+    // Add history entry
+    await addHistoryEntry(
+      applicationId,
+      "Application Updated",
+      application.status,
+      application.status,
+      req.user.id,
+      req.user.fullName || req.user.username,
+      "Application details were updated"
+    );
+
+    return res.status(200).json({ message: "Application updated successfully." });
+  } catch (error) {
+    console.error("Update bursary application error:", error);
+    return res.status(500).json({ message: "Failed to update application." });
+  }
+}
+
+// ============================================================
+// CITIZEN: WITHDRAW APPLICATION
+// ============================================================
+
+async function withdrawApplication(req, res) {
+  try {
+    const applicationId = req.params.id;
+    const userId = req.user.id;
+
+    // Get application
+    const [appRows] = await pool.execute(
+      `SELECT * FROM bursary_applications WHERE id = ? AND user_id = ? LIMIT 1`,
+      [applicationId, userId]
+    );
+
+    if (appRows.length === 0) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    const application = appRows[0];
+
+    // Only allow withdrawal for Submitted or Under_Review status
+    if (application.status !== "Submitted" && application.status !== "Under_Review") {
+      return res.status(400).json({ message: "Application can only be withdrawn when in Submitted or Under Review status." });
+    }
+
+    await pool.execute(
+      `UPDATE bursary_applications SET status = 'Rejected', rejection_reason = 'Application withdrawn by applicant', updated_at = NOW()
+       WHERE id = ?`,
+      [applicationId]
+    );
+
+    // Add history entry
+    await addHistoryEntry(
+      applicationId,
+      "Application Withdrawn",
+      application.status,
+      "Rejected",
+      userId,
+      req.user.fullName || req.user.username,
+      "Application withdrawn by applicant"
+    );
+
+    return res.status(200).json({ message: "Application withdrawn successfully." });
+  } catch (error) {
+    console.error("Withdraw bursary application error:", error);
+    return res.status(500).json({ message: "Failed to withdraw application." });
+  }
+}
+
+// ============================================================
+// CITIZEN: DELETE DRAFT APPLICATION
+// ============================================================
+
+async function deleteDraftApplication(req, res) {
+  try {
+    const applicationId = req.params.id;
+    const userId = req.user.id;
+
+    // Get application
+    const [appRows] = await pool.execute(
+      `SELECT * FROM bursary_applications WHERE id = ? AND user_id = ? LIMIT 1`,
+      [applicationId, userId]
+    );
+
+    if (appRows.length === 0) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    const application = appRows[0];
+
+    // Only allow deleting draft applications
+    if (application.status !== "Draft") {
+      return res.status(400).json({ message: "Only draft applications can be deleted." });
+    }
+
+    // Delete related records
+    await pool.execute(
+      `DELETE FROM bursary_application_documents WHERE application_id = ?`,
+      [applicationId]
+    );
+    await pool.execute(
+      `DELETE FROM bursary_application_history WHERE application_id = ?`,
+      [applicationId]
+    );
+    await pool.execute(
+      `DELETE FROM bursary_applications WHERE id = ?`,
+      [applicationId]
+    );
+
+    return res.status(200).json({ message: "Draft application deleted successfully." });
+  } catch (error) {
+    console.error("Delete draft bursary application error:", error);
+    return res.status(500).json({ message: "Failed to delete draft application." });
+  }
+}
+
+// ============================================================
+// EXPORT APPLICATIONS TO CSV
+// ============================================================
+
+async function exportApplications(req, res) {
+  try {
+    const {
+      search = "",
+      ward = "",
+      institutionType = "",
+      status = "",
+      academicYear = "",
+    } = req.query;
+
+    const userRole = req.user?.role?.toLowerCase();
+    const userWard = req.user?.ward;
+
+    let whereClause = "WHERE 1=1";
+    const params = [];
+
+    if (userRole !== "admin" && userWard) {
+      whereClause += " AND ba.ward = ?";
+      params.push(userWard);
+    }
+
+    if (search) {
+      whereClause += " AND (ba.full_name LIKE ? OR ba.national_id LIKE ? OR ba.application_number LIKE ? OR ba.institution_name LIKE ?)";
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    }
+
+    if (ward) {
+      whereClause += " AND ba.ward = ?";
+      params.push(ward);
+    }
+
+    if (institutionType) {
+      whereClause += " AND ba.institution_type = ?";
+      params.push(institutionType);
+    }
+
+    if (status) {
+      whereClause += " AND ba.status = ?";
+      params.push(status);
+    }
+
+    if (academicYear) {
+      whereClause += " AND ba.academic_year = ?";
+      params.push(academicYear);
+    }
+
+    const [rows] = await pool.execute(
+      `SELECT ba.*, u.full_name AS submitted_by_name
+       FROM bursary_applications ba
+       LEFT JOIN users u ON ba.user_id = u.id
+       ${whereClause}
+       ORDER BY ba.created_at DESC`,
+      params
+    );
+
+    // Build CSV
+    const headers = [
+      "Application Number", "Full Name", "National ID", "Phone", "Email", "Ward",
+      "Institution", "Institution Type", "Course/Form", "Academic Year",
+      "Total Fees", "Amount Paid", "Outstanding", "Amount Requested", "Approved Amount",
+      "Status", "Submitted At", "Created At"
+    ];
+
+    const csvRows = rows.map((row) => [
+      row.application_number,
+      row.full_name,
+      row.national_id,
+      row.phone_number,
+      row.email || "",
+      row.ward,
+      row.institution_name,
+      row.institution_type,
+      row.course_or_form || "",
+      row.academic_year,
+      row.total_fees,
+      row.amount_paid,
+      row.outstanding_balance,
+      row.amount_requested,
+      row.approved_amount || 0,
+      row.status,
+      row.submitted_at ? new Date(row.submitted_at).toISOString() : "",
+      row.created_at ? new Date(row.created_at).toISOString() : "",
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...csvRows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename=bursary_applications_${Date.now()}.csv`);
+    return res.status(200).send(csvContent);
+  } catch (error) {
+    console.error("Export bursary applications error:", error);
+    return res.status(500).json({ message: "Failed to export applications." });
+  }
+}
+
+// ============================================================
+// CITIZEN: GET SINGLE APPLICATION
+// ============================================================
+
+async function getMyApplicationById(req, res) {
+  try {
+    const applicationId = req.params.id;
+    const userId = req.user.id;
+
+    const [rows] = await pool.execute(
+      `SELECT * FROM bursary_applications WHERE id = ? AND user_id = ? LIMIT 1`,
+      [applicationId, userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Application not found." });
+    }
+
+    const application = formatBursaryApplication(rows[0]);
+
+    // Get documents
+    const [docRows] = await pool.execute(
+      `SELECT * FROM bursary_application_documents WHERE application_id = ? ORDER BY uploaded_at DESC`,
+      [applicationId]
+    );
+    application.documents = docRows.map((doc) => ({
+      id: doc.id,
+      documentType: doc.document_type,
+      fileName: doc.file_name,
+      filePath: doc.file_path,
+      secureUrl: doc.secure_url,
+      publicId: doc.public_id,
+      fileType: doc.file_type,
+      fileSize: doc.file_size,
+      uploadedAt: doc.uploaded_at,
+    }));
+
+    // Get history
+    const [historyRows] = await pool.execute(
+      `SELECT * FROM bursary_application_history WHERE application_id = ? ORDER BY created_at DESC`,
+      [applicationId]
+    );
+    application.history = historyRows.map((h) => ({
+      id: h.id,
+      action: h.action,
+      previousStatus: h.previous_status,
+      newStatus: h.new_status,
+      performedBy: h.performed_by,
+      performedByName: h.performed_by_name,
+      notes: h.notes,
+      createdAt: h.created_at,
+    }));
+
+    return res.status(200).json({ application });
+  } catch (error) {
+    console.error("Get my bursary application error:", error);
+    return res.status(500).json({ message: "Failed to fetch application." });
   }
 }
 
@@ -944,16 +1370,346 @@ async function getBursaryReports(req, res) {
   }
 }
 
+// ============================================================
+// GET BENEFICIARIES (Approved/Disbursed applications)
+// ============================================================
+
+async function getBeneficiaries(req, res) {
+  try {
+    const { search = "", ward = "", institutionType = "", academicYear = "", page = 1, limit = 20 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const userRole = req.user?.role?.toLowerCase();
+    const userWard = req.user?.ward;
+
+    let whereClause = "WHERE status IN ('Approved', 'Disbursed')";
+    const params = [];
+
+    if (userRole !== "admin" && userWard) {
+      whereClause += " AND ward = ?";
+      params.push(userWard);
+    }
+
+    if (search) {
+      whereClause += " AND (full_name LIKE ? OR national_id LIKE ? OR application_number LIKE ? OR institution_name LIKE ?)";
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    }
+
+    if (ward) {
+      whereClause += " AND ward = ?";
+      params.push(ward);
+    }
+
+    if (institutionType) {
+      whereClause += " AND institution_type = ?";
+      params.push(institutionType);
+    }
+
+    if (academicYear) {
+      whereClause += " AND academic_year = ?";
+      params.push(academicYear);
+    }
+
+    const [countRows] = await pool.execute(
+      `SELECT COUNT(*) AS total FROM bursary_applications ${whereClause}`,
+      params
+    );
+    const total = countRows[0]?.total || 0;
+
+    const [rows] = await pool.execute(
+      `SELECT ba.*, u.full_name AS submitted_by_name, r.full_name AS reviewed_by_name
+       FROM bursary_applications ba
+       LEFT JOIN users u ON ba.user_id = u.id
+       LEFT JOIN users r ON ba.reviewed_by = r.id
+       ${whereClause}
+       ORDER BY ba.approved_at DESC, ba.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [...params, parseInt(limit), offset]
+    );
+
+    const beneficiaries = rows.map(formatBursaryApplication);
+
+    return res.status(200).json({
+      beneficiaries,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / parseInt(limit)),
+      },
+    });
+  } catch (error) {
+    console.error("Get beneficiaries error:", error);
+    return res.status(500).json({ message: "Failed to fetch beneficiaries." });
+  }
+}
+
+// ============================================================
+// GET PAYMENTS (Disbursed applications)
+// ============================================================
+
+async function getPayments(req, res) {
+  try {
+    const { search = "", ward = "", status = "", page = 1, limit = 20 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const userRole = req.user?.role?.toLowerCase();
+    const userWard = req.user?.ward;
+
+    let whereClause = "WHERE status = 'Disbursed'";
+    const params = [];
+
+    if (userRole !== "admin" && userWard) {
+      whereClause += " AND ward = ?";
+      params.push(userWard);
+    }
+
+    if (search) {
+      whereClause += " AND (full_name LIKE ? OR national_id LIKE ? OR application_number LIKE ? OR institution_name LIKE ?)";
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+    }
+
+    if (ward) {
+      whereClause += " AND ward = ?";
+      params.push(ward);
+    }
+
+    const [countRows] = await pool.execute(
+      `SELECT COUNT(*) AS total FROM bursary_applications ${whereClause}`,
+      params
+    );
+    const total = countRows[0]?.total || 0;
+
+    const [rows] = await pool.execute(
+      `SELECT ba.*, u.full_name AS submitted_by_name, r.full_name AS reviewed_by_name
+       FROM bursary_applications ba
+       LEFT JOIN users u ON ba.user_id = u.id
+       LEFT JOIN users r ON ba.reviewed_by = r.id
+       ${whereClause}
+       ORDER BY ba.disbursed_at DESC, ba.created_at DESC
+       LIMIT ? OFFSET ?`,
+      [...params, parseInt(limit), offset]
+    );
+
+    const payments = rows.map(formatBursaryApplication);
+
+    return res.status(200).json({
+      payments,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / parseInt(limit)),
+      },
+    });
+  } catch (error) {
+    console.error("Get payments error:", error);
+    return res.status(500).json({ message: "Failed to fetch payments." });
+  }
+}
+
+// ============================================================
+// BURSARY PROGRAMS CRUD
+// ============================================================
+
+async function getPrograms(req, res) {
+  try {
+    const [rows] = await pool.execute(
+      `SELECT * FROM bursary_programs ORDER BY created_at DESC`
+    );
+    return res.status(200).json({ programs: rows });
+  } catch (error) {
+    console.error("Get programs error:", error);
+    return res.status(500).json({ message: "Failed to fetch programs." });
+  }
+}
+
+async function createProgram(req, res) {
+  try {
+    const {
+      programCode,
+      programName,
+      description,
+      institutionType,
+      maxAmount,
+      minAmount,
+      totalBudget,
+      applicationStartDate,
+      applicationEndDate,
+      academicYear,
+      ward,
+      requirements,
+      isActive,
+    } = req.body;
+
+    if (!programCode || !programName || !maxAmount || !totalBudget) {
+      return res.status(400).json({ message: "Program code, name, max amount, and total budget are required." });
+    }
+
+    const [result] = await pool.execute(
+      `INSERT INTO bursary_programs
+       (program_code, program_name, description, institution_type, max_amount, min_amount, total_budget,
+        application_start_date, application_end_date, academic_year, ward, requirements, is_active, created_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        programCode,
+        programName,
+        description || null,
+        institutionType || "All",
+        parseFloat(maxAmount),
+        parseFloat(minAmount || 0),
+        parseFloat(totalBudget),
+        applicationStartDate || null,
+        applicationEndDate || null,
+        academicYear || null,
+        ward || null,
+        requirements || null,
+        isActive !== false ? 1 : 0,
+        req.user.id,
+      ]
+    );
+
+    return res.status(201).json({
+      message: "Program created successfully.",
+      programId: result.insertId,
+    });
+  } catch (error) {
+    console.error("Create program error:", error);
+    return res.status(500).json({ message: "Failed to create program." });
+  }
+}
+
+async function updateProgram(req, res) {
+  try {
+    const programId = req.params.id;
+    const {
+      programCode,
+      programName,
+      description,
+      institutionType,
+      maxAmount,
+      minAmount,
+      totalBudget,
+      applicationStartDate,
+      applicationEndDate,
+      academicYear,
+      ward,
+      requirements,
+      isActive,
+    } = req.body;
+
+    const [result] = await pool.execute(
+      `UPDATE bursary_programs SET
+        program_code = ?, program_name = ?, description = ?, institution_type = ?,
+        max_amount = ?, min_amount = ?, total_budget = ?,
+        application_start_date = ?, application_end_date = ?, academic_year = ?, ward = ?,
+        requirements = ?, is_active = ?, updated_at = NOW()
+       WHERE id = ?`,
+      [
+        programCode,
+        programName,
+        description || null,
+        institutionType || "All",
+        parseFloat(maxAmount),
+        parseFloat(minAmount || 0),
+        parseFloat(totalBudget),
+        applicationStartDate || null,
+        applicationEndDate || null,
+        academicYear || null,
+        ward || null,
+        requirements || null,
+        isActive !== false ? 1 : 0,
+        programId,
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Program not found." });
+    }
+
+    return res.status(200).json({ message: "Program updated successfully." });
+  } catch (error) {
+    console.error("Update program error:", error);
+    return res.status(500).json({ message: "Failed to update program." });
+  }
+}
+
+async function deleteProgram(req, res) {
+  try {
+    const programId = req.params.id;
+    const [result] = await pool.execute(
+      `DELETE FROM bursary_programs WHERE id = ?`,
+      [programId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Program not found." });
+    }
+
+    return res.status(200).json({ message: "Program deleted successfully." });
+  } catch (error) {
+    console.error("Delete program error:", error);
+    return res.status(500).json({ message: "Failed to delete program." });
+  }
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+async function getNotifications(req, res) {
+  try {
+    const userId = req.user.id;
+    const [rows] = await pool.execute(
+      `SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 50`,
+      [userId]
+    );
+    return res.status(200).json({ notifications: rows });
+  } catch (error) {
+    console.error("Get notifications error:", error);
+    return res.status(500).json({ message: "Failed to fetch notifications." });
+  }
+}
+
+async function markNotificationAsRead(req, res) {
+  try {
+    const notificationId = req.params.id;
+    const userId = req.user.id;
+    const [result] = await pool.execute(
+      `UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?`,
+      [notificationId, userId]
+    );
+    return res.status(200).json({ message: "Notification marked as read." });
+  } catch (error) {
+    console.error("Mark notification as read error:", error);
+    return res.status(500).json({ message: "Failed to update notification." });
+  }
+}
+
 module.exports = {
   getAllApplications,
   getApplicationById,
   getMyApplications,
+  getMyApplicationById,
   createApplication,
+  updateApplication,
   updateApplicationStatus,
+  deleteApplication,
+  deleteDraftApplication,
+  withdrawApplication,
+  exportApplications,
   uploadDocument,
   deleteDocument,
   getBursaryStats,
   getBursaryReports,
+  getBeneficiaries,
+  getPayments,
+  getPrograms,
+  createProgram,
+  updateProgram,
+  deleteProgram,
+  getNotifications,
+  markNotificationAsRead,
   BURSARY_STATUS,
   INSTITUTION_TYPES,
   DOCUMENT_TYPES,

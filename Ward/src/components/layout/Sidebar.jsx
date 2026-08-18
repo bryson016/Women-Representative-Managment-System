@@ -4,6 +4,7 @@ import {
   CalendarDays,
   FileText,
   GraduationCap,
+  Image,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -12,9 +13,14 @@ import {
   Users,
   Wallet,
   X,
+  UserCheck,
+  HandCoins,
+  BookOpen,
+  Bell,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { sidebarItems } from "../../data/dashboardData";
+import { useAuth } from "../../context/AuthContext";
+import { getSidebarItems } from "../../data/dashboardData";
 
 const ICON_MAP = {
   LayoutDashboard,
@@ -28,9 +34,17 @@ const ICON_MAP = {
   FileText,
   Settings,
   LogOut,
+  Image,
+  UserCheck,
+  HandCoins,
+  BookOpen,
+  Bell,
 };
 
-function Sidebar({ activeItem, onItemClick, collapsed, onToggleCollapse, mobileOpen, onCloseMobile }) {
+function Sidebar({ activeItem, onItemClick, collapsed, onToggleCollapse, mobileOpen, onCloseMobile, userRole }) {
+  const { user } = useAuth();
+  const sidebarItems = getSidebarItems(userRole || user?.role);
+
   return (
     <>
       {mobileOpen ? <button className="sidebar-backdrop" onClick={onCloseMobile} aria-label="Close menu" /> : null}

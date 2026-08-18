@@ -5,24 +5,76 @@ import {
   FileChartColumnIncreasing,
   FolderKanban,
   GraduationCap,
+  Image,
   UserPlus,
   Users,
   UserCog,
+  Wallet,
+  FileText,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  Megaphone,
+  Building2,
+  CalendarDays,
+  HandCoins,
+  UserCheck,
+  Bell,
+  BookOpen,
 } from "lucide-react";
 
-export const sidebarItems = [
-  { id: "dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-  { id: "citizens", label: "Citizens", icon: "Users" },
-  { id: "complaints", label: "Complaints", icon: "Megaphone" },
-  { id: "bursary", label: "Bursary Applications", icon: "GraduationCap" },
-  { id: "projects", label: "Development Projects", icon: "Building2" },
-  { id: "meetings", label: "Meetings", icon: "CalendarDays" },
-  { id: "staff", label: "Staff", icon: "BriefcaseBusiness" },
-  { id: "budget", label: "Ward Budget", icon: "Wallet" },
-  { id: "reports", label: "Reports", icon: "FileText" },
-  { id: "settings", label: "Settings", icon: "Settings" },
-  { id: "logout", label: "Logout", icon: "LogOut" },
-];
+export const getSidebarItems = (role) => {
+  const normalizedRole = String(role || "citizen").toLowerCase().trim();
+
+  const adminItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "images", label: "Images", icon: Image },
+    { id: "citizens", label: "Citizens", icon: Users },
+    { id: "complaints", label: "Complaints", icon: Megaphone },
+    { id: "bursary", label: "Bursary Applications", icon: GraduationCap },
+    { id: "beneficiaries", label: "Beneficiaries", icon: UserCheck },
+    { id: "payments", label: "Payments & Disbursements", icon: HandCoins },
+    { id: "bursary-programs", label: "Bursary Programs", icon: BookOpen },
+    { id: "projects", label: "Development Projects", icon: Building2 },
+    { id: "meetings", label: "Meetings", icon: CalendarDays },
+    { id: "staff", label: "Staff", icon: BriefcaseBusiness },
+    { id: "budget", label: "Ward Budget", icon: Wallet },
+    { id: "reports", label: "Reports", icon: FileText },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "settings", label: "Settings", icon: Settings },
+    { id: "logout", label: "Logout", icon: LogOut },
+  ];
+
+  const staffItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "images", label: "Images", icon: Image },
+    { id: "citizens", label: "Citizens", icon: Users },
+    { id: "complaints", label: "Complaints", icon: Megaphone },
+    { id: "bursary", label: "Bursary Applications", icon: GraduationCap },
+    { id: "beneficiaries", label: "Beneficiaries", icon: UserCheck },
+    { id: "payments", label: "Payments & Disbursements", icon: HandCoins },
+    { id: "projects", label: "Development Projects", icon: Building2 },
+    { id: "meetings", label: "Meetings", icon: CalendarDays },
+    { id: "budget", label: "Ward Budget", icon: Wallet },
+    { id: "reports", label: "Reports", icon: FileText },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "settings", label: "Settings", icon: Settings },
+    { id: "logout", label: "Logout", icon: LogOut },
+  ];
+
+  const citizenItems = [
+    { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { id: "bursary", label: "Apply for Bursary", icon: GraduationCap },
+    { id: "my-applications", label: "My Applications", icon: FileText },
+    { id: "notifications", label: "Notifications", icon: Bell },
+    { id: "settings", label: "Settings", icon: Settings },
+    { id: "logout", label: "Logout", icon: LogOut },
+  ];
+
+  if (normalizedRole === "admin") return adminItems;
+  if (normalizedRole === "staff" || normalizedRole === "officer") return staffItems;
+  return citizenItems;
+};
 
 export const statCards = [
   {
@@ -96,6 +148,7 @@ export const budgetAllocationData = [
   { name: "Health Services", value: 18 },
   { name: "Education Support", value: 16 },
   { name: "Admin & Security", value: 10 },
+  { name: "Busary", value: 9},
 ];
 
 export const recentComplaints = [
@@ -103,7 +156,7 @@ export const recentComplaints = [
     id: 1,
     citizen: "Amina Hassan",
     category: "Sanitation",
-    village: "Kisumu",
+    village: "Kilgoris",
     priority: "High",
     status: "Pending",
     date: "2026-07-19",
@@ -114,7 +167,7 @@ export const upcomingMeetings = [
   {
     id: 1,
     title: "Ward Development Forum",
-    venue: "Makongeni",
+    venue: "Narok North",
     date: "2026-07-24",
     time: "10:00 AM",
     attendance: 120,
@@ -122,7 +175,7 @@ export const upcomingMeetings = [
   {
     id: 3,
     title: "Citizen Engagement Baraza",
-    venue: "Kangemi Grounds",
+    venue: "Narok Grounds",
     date: "2026-08-01",
     time: "9:30 AM",
     attendance: 200,

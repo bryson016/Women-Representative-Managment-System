@@ -12,15 +12,15 @@ export const settingsCategories = [
 ];
 
 export const generalSettings = {
-  wardName: "Kiambu Ward",
+  wardName: "Narok Ward",
   wardCode: "KBW-001",
-  county: "Kiambu County",
+  county: "Narok County",
   systemName: "Women Repsentative system",
   financialYear: "2026/2027",
   timeZone: "Africa/Nairobi (EAT)",
-  email: "info@kiambuward.go.ke",
+  email: "info@Narokcounty.go.ke",
   phone: "+254 712 345 678",
-  officeAddress: "Kiambu, Kenya",
+  officeAddress: "Narok, Kenya",
 };
 
 export const systemStatus = {

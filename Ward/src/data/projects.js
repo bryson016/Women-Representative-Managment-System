@@ -14,14 +14,14 @@ export const statuses = ["Planning", "Approved", "Ongoing", "Delayed", "Complete
 export const priorities = ["Low", "Medium", "High", "Critical"];
 
 export const wards = [ "Kisii",
-  "Makongeni Village",
-  "Kigango",
-  "Burudika",
-  "Jua Kali",
-  "Blue Rebellion",
-  "Corner 1",
-  "Corner 2",
-  "Corner 3",
+  "NAROK NORTH",
+  "NAROK EAST",
+  "NAROK WEST",
+  "KILGORIS",
+  "NAROK TOWN",
+  "ONGATA",
+  "KILPIGIS",
+  "NAROK SOUTH",
   "G5",
   "Salama",
   "Landless"];

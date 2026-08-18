@@ -10,10 +10,18 @@ import {
   XCircle,
   Wallet,
   Search,
-  Filter,
+  Download,
+  Trash2,
+  X,
+  AlertTriangle,
 } from "lucide-react";
 import CitizenLayout from "../../components/citizens/CitizenLayout";
-import { getMyBursaryApplications } from "../../services/bursaryApi";
+import {
+  getMyBursaryApplications,
+  getMyBursaryApplication,
+  withdrawBursaryApplication,
+  deleteMyBursaryApplication,
+} from "../../services/bursaryApi";
 
 const STATUS_COLORS = {
   Draft: "bg-gray-100 text-gray-700",
@@ -34,6 +42,9 @@ function CitizenBursaryTracking() {
   const [filterStatus, setFilterStatus] = useState("");
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     loadApplications();
@@ -53,14 +64,88 @@ function CitizenBursaryTracking() {
 
   async function handleViewApplication(id) {
     try {
-      const data = await getMyBursaryApplications();
-      const app = data.applications.find((a) => a.id === id);
-      if (app) {
-        setSelectedApplication(app);
-        setShowDetailModal(true);
-      }
+      const data = await getMyBursaryApplication(id);
+      setSelectedApplication(data.application);
+      setShowDetailModal(true);
     } catch (error) {
       console.error("Error loading application:", error);
+    }
+  }
+
+  function handleDownload() {
+    if (!selectedApplication) return;
+    const content = `
+BURSARY APPLICATION - ${selectedApplication.applicationNumber}
+Applicant: ${selectedApplication.fullName}
+National ID: ${selectedApplication.nationalId}
+Phone: ${selectedApplication.phoneNumber}
+Email: ${selectedApplication.email || "N/A"}
+Ward: ${selectedApplication.ward}
+
+EDUCATION
+Institution: ${selectedApplication.institutionName}
+Type: ${selectedApplication.institutionType}
+Course/Form: ${selectedApplication.courseOrForm || "N/A"}
+Academic Year: ${selectedApplication.academicYear}
+
+FINANCIAL
+Total Fees: KES ${parseFloat(selectedApplication.totalFees || 0).toLocaleString()}
+Amount Paid: KES ${parseFloat(selectedApplication.amountPaid || 0).toLocaleString()}
+Outstanding: KES ${parseFloat(selectedApplication.outstandingBalance || 0).toLocaleString()}
+Amount Requested: KES ${parseFloat(selectedApplication.amountRequested || 0).toLocaleString()}
+Approved Amount: ${selectedApplication.approvedAmount ? `KES ${parseFloat(selectedApplication.approvedAmount).toLocaleString()}` : "Pending"}
+
+STATUS: ${selectedApplication.status.replace("_", " ")}
+Submitted: ${formatDate(selectedApplication.submittedAt || selectedApplication.createdAt)}
+    `;
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${selectedApplication.applicationNumber}.txt`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  }
+
+  function openWithdrawConfirm() {
+    setShowWithdrawConfirm(true);
+  }
+
+  async function handleWithdraw() {
+    if (!selectedApplication) return;
+    setActionLoading(true);
+    try {
+      await withdrawBursaryApplication(selectedApplication.id);
+      setShowWithdrawConfirm(false);
+      setShowDetailModal(false);
+      loadApplications();
+    } catch (error) {
+      console.error("Error withdrawing application:", error);
+      alert(error.response?.data?.message || "Failed to withdraw application.");
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  function openDeleteConfirm() {
+    setShowDeleteConfirm(true);
+  }
+
+  async function handleDelete() {
+    if (!selectedApplication) return;
+    setActionLoading(true);
+    try {
+      await deleteMyBursaryApplication(selectedApplication.id);
+      setShowDeleteConfirm(false);
+      setShowDetailModal(false);
+      loadApplications();
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      alert(error.response?.data?.message || "Failed to delete application.");
+    } finally {
+      setActionLoading(false);
     }
   }
 
@@ -318,6 +403,112 @@ function CitizenBursaryTracking() {
             <div className="modal-footer">
               <button className="gov-btn gov-btn-secondary" onClick={() => setShowDetailModal(false)}>
                 Close
+              </button>
+              <button className="gov-btn gov-btn-ghost" onClick={handleDownload}>
+                <Download size={16} />
+                Download
+              </button>
+              {(selectedApplication.status === "Submitted" || selectedApplication.status === "Under_Review") && (
+                <button
+                  className="gov-btn gov-btn-secondary"
+                  style={{ background: "#fef2f2", color: "#ef4444" }}
+                  onClick={openWithdrawConfirm}
+                >
+                  <XCircle size={16} />
+                  Withdraw
+                </button>
+              )}
+              {selectedApplication.status === "Draft" && (
+                <button
+                  className="gov-btn gov-btn-secondary"
+                  style={{ background: "#fef2f2", color: "#ef4444" }}
+                  onClick={openDeleteConfirm}
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Withdraw Confirmation Modal */}
+      {showWithdrawConfirm && selectedApplication && (
+        <div className="modal-overlay" onClick={() => setShowWithdrawConfirm(false)}>
+          <motion.div
+            className="modal-content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "450px" }}
+          >
+            <div className="modal-header">
+              <h2>Withdraw Application</h2>
+              <button className="icon-btn soft" onClick={() => setShowWithdrawConfirm(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <AlertTriangle size={24} style={{ color: "#f59e0b" }} />
+                <p style={{ margin: 0 }}>
+                  Are you sure you want to withdraw application <strong>{selectedApplication.applicationNumber}</strong>? This will mark it as rejected.
+                </p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="gov-btn gov-btn-secondary" onClick={() => setShowWithdrawConfirm(false)} disabled={actionLoading}>
+                Cancel
+              </button>
+              <button
+                className="gov-btn gov-btn-primary"
+                style={{ background: "#ef4444" }}
+                onClick={handleWithdraw}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Withdrawing..." : "Withdraw Application"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && selectedApplication && (
+        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
+          <motion.div
+            className="modal-content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "450px" }}
+          >
+            <div className="modal-header">
+              <h2>Delete Draft</h2>
+              <button className="icon-btn soft" onClick={() => setShowDeleteConfirm(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <AlertTriangle size={24} style={{ color: "#ef4444" }} />
+                <p style={{ margin: 0 }}>
+                  Are you sure you want to delete draft application <strong>{selectedApplication.applicationNumber}</strong>? This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="gov-btn gov-btn-secondary" onClick={() => setShowDeleteConfirm(false)} disabled={actionLoading}>
+                Cancel
+              </button>
+              <button
+                className="gov-btn gov-btn-primary"
+                style={{ background: "#ef4444" }}
+                onClick={handleDelete}
+                disabled={actionLoading}
+              >
+                {actionLoading ? "Deleting..." : "Delete Draft"}
               </button>
             </div>
           </motion.div>

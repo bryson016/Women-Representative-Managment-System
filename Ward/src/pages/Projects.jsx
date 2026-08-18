@@ -143,6 +143,10 @@ function Projects({ onLogout }) {
         navigate("/dashboard");
         return;
       }
+      if (id === "images") {
+        navigate("/images");
+        return;
+      }
       if (id === "citizens") {
         navigate("/citizens");
         return;
@@ -151,8 +155,32 @@ function Projects({ onLogout }) {
         navigate("/complaints");
         return;
       }
+      if (id === "bursary") {
+        navigate("/bursary");
+        return;
+      }
+      if (id === "beneficiaries") {
+        navigate("/beneficiaries");
+        return;
+      }
+      if (id === "payments") {
+        navigate("/payments");
+        return;
+      }
+      if (id === "bursary-programs") {
+        navigate("/bursary-programs");
+        return;
+      }
+      if (id === "projects") {
+        navigate("/projects");
+        return;
+      }
       if (id === "meetings") {
         navigate("/meetings");
+        return;
+      }
+      if (id === "staff") {
+        navigate("/staff");
         return;
       }
       if (id === "budget") {
@@ -161,6 +189,10 @@ function Projects({ onLogout }) {
       }
       if (id === "reports") {
         navigate("/reports");
+        return;
+      }
+      if (id === "notifications") {
+        navigate("/notifications");
         return;
       }
       if (id === "settings") {

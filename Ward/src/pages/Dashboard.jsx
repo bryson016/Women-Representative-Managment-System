@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import {
   Bar,
   BarChart,
@@ -14,7 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CheckCircle, GraduationCap } from "lucide-react";
+import { CheckCircle, GraduationCap, Clock, XCircle, Wallet, BarChart3 } from "lucide-react";
 import Sidebar from "../components/layout/Sidebar";
 import TopNavbar from "../components/layout/TopNavbar";
 import DashboardCard from "../components/DashboardCard";
@@ -41,6 +42,7 @@ const PIE_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227"];
 
 function Dashboard({ onLogout }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeItem, setActiveItem] = useState("dashboard");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -77,6 +79,14 @@ function Dashboard({ onLogout }) {
       onLogout();
       return;
     }
+    if (id === "dashboard") {
+      navigate("/dashboard");
+      return;
+    }
+    if (id === "images") {
+      navigate("/images");
+      return;
+    }
     if (id === "citizens") {
       navigate("/citizens");
       return;
@@ -87,6 +97,18 @@ function Dashboard({ onLogout }) {
     }
     if (id === "bursary") {
       navigate("/bursary");
+      return;
+    }
+    if (id === "beneficiaries") {
+      navigate("/beneficiaries");
+      return;
+    }
+    if (id === "payments") {
+      navigate("/payments");
+      return;
+    }
+    if (id === "bursary-programs") {
+      navigate("/bursary-programs");
       return;
     }
     if (id === "projects") {
@@ -109,8 +131,16 @@ function Dashboard({ onLogout }) {
       navigate("/reports");
       return;
     }
+    if (id === "notifications") {
+      navigate("/notifications");
+      return;
+    }
     if (id === "settings") {
       navigate("/settings");
+      return;
+    }
+    if (id === "my-applications") {
+      navigate("/citizen/bursary/tracking");
       return;
     }
     setActiveItem(id);
@@ -121,6 +151,7 @@ function Dashboard({ onLogout }) {
     <div className={`dashboard-shell ${isDarkMode ? "dark-mode" : ""}`}>
       <Sidebar
         activeItem={activeItem}
+        userRole={user?.role}
         onItemClick={handleItemClick}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((prev) => !prev)}
@@ -216,7 +247,7 @@ function Dashboard({ onLogout }) {
                   </div>
                 </div>
                 <h3>{bursaryStats.totalApplications}</h3>
-                <h4>Bursary Applications</h4>
+                <h4>Total Applications</h4>
                 <p>{bursaryStats.pending} pending review</p>
               </motion.div>
               <motion.div
@@ -227,6 +258,22 @@ function Dashboard({ onLogout }) {
                 whileHover={{ y: -4 }}
               >
                 <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#f59e0b15", color: "#f59e0b" }}>
+                    <Clock size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.underReview}</h3>
+                <h4>Under Review</h4>
+                <p>Awaiting decision</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
                   <div className="stat-icon" style={{ background: "#10b98115", color: "#10b981" }}>
                     <CheckCircle size={18} />
                   </div>
@@ -234,6 +281,54 @@ function Dashboard({ onLogout }) {
                 <h3>{bursaryStats.approved}</h3>
                 <h4>Approved</h4>
                 <p>KES {bursaryStats.totalAmountApproved?.toLocaleString() || 0}</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#ef444415", color: "#ef4444" }}>
+                    <XCircle size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.rejected}</h3>
+                <h4>Rejected</h4>
+                <p>Not approved</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#05966915", color: "#059669" }}>
+                    <Wallet size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.disbursed}</h3>
+                <h4>Disbursed</h4>
+                <p>Payments made</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.75, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#6366f115", color: "#6366f1" }}>
+                    <BarChart3 size={18} />
+                  </div>
+                </div>
+                <h3>KES {bursaryStats.totalAmountRequested?.toLocaleString() || 0}</h3>
+                <h4>Total Requested</h4>
+                <p>All applications</p>
               </motion.div>
             </>
           )}
@@ -297,7 +392,19 @@ function Dashboard({ onLogout }) {
               </div>
               <div className="quick-grid">
                 {quickActions.map((action, index) => (
-                  <QuickActionCard key={action.id} {...action} index={index} />
+                  <QuickActionCard
+                    key={action.id}
+                    {...action}
+                    index={index}
+                    onClick={() => {
+                      if (action.id === "register-citizen") navigate("/citizens");
+                      else if (action.id === "record-complaint") navigate("/complaints");
+                      else if (action.id === "add-project") navigate("/projects");
+                      else if (action.id === "schedule-meeting") navigate("/meetings");
+                      else if (action.id === "manage-staff") navigate("/staff");
+                      else if (action.id === "generate-report") navigate("/reports");
+                    }}
+                  />
                 ))}
               </div>
             </section>

@@ -192,7 +192,7 @@ function StaffDashboard({ staff, onViewStaff }) {
             <div style={{
               height: "100%",
               width: `${((statusCounts["On Duty"] + statusCounts["Field Visit"]) / staff.length * 100)}%`,
-              background: "linear-gradient(90deg, #7c3aed, #8b5cf6)",
+              background: "linear-gradient(90deg, #7c3aed, #7c3aed)",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />

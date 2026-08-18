@@ -29,7 +29,7 @@ function StaffCharts({ staff }) {
     "Administration": "#7c3aed",
     "Health Services": "#b91c1c",
     "Public Works": "#a78bfa",
-    "Water & Sanitation": "#8b5cf6",
+    "Water & Sanitation": "#7c3aed",
     "Education": "#1d4ed8",
     "Security": "#7c3aed",
     "Community Development": "#f59e0b",
@@ -128,7 +128,7 @@ function StaffCharts({ staff }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / Math.max(...Object.values(roleData))) * 100}%`,
-                  background: "#8b5cf6",
+                  background: "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />
@@ -190,7 +190,7 @@ function StaffCharts({ staff }) {
             <div style={{
               height: "100%",
               width: `${avgPerformance}%`,
-              background: avgPerformance >= 90 ? "#6d28d9" : avgPerformance >= 80 ? "#8b5cf6" : "#f59e0b",
+              background: avgPerformance >= 90 ? "#6d28d9" : avgPerformance >= 80 ? "#7c3aed" : "#f59e0b",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />

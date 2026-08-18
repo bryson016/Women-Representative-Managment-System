@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-const INSIGHT_COLORS = ["#7c3aed", "#8b5cf6", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
+const INSIGHT_COLORS = ["#7c3aed", "#7c3aed", "#2D936C", "#65A30D", "#C9A227", "#6d28d9", "#4D7C0F", "#047857"];
 
 function BudgetInsights({ monthly, performance, topSpending, leastUtilized }) {
   const formatKES = (amount) => {

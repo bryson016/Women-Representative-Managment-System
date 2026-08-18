@@ -16,6 +16,8 @@ import {
   AlertCircle,
   Send,
   Save,
+  Printer,
+  RotateCcw,
 } from "lucide-react";
 import CitizenLayout from "../../components/citizens/CitizenLayout";
 import { getCitizenProfile, submitBursaryApplication } from "../../services/citizenApi";
@@ -99,6 +101,8 @@ function CitizenBursaryForm() {
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [declarationAccepted, setDeclarationAccepted] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [draftSaved, setDraftSaved] = useState(false);
 
   // Calculated outstanding balance
   const outstandingBalance = useMemo(() => {
@@ -217,6 +221,69 @@ function CitizenBursaryForm() {
     }
 
     setShowConfirmDialog(true);
+  }
+
+  function handlePrint() {
+    window.print();
+  }
+
+  function handleReset() {
+    if (window.confirm("Are you sure you want to reset the form? All entered data will be cleared.")) {
+      setFormData({
+        fullName: formData.fullName,
+        nationalId: formData.nationalId,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        phoneNumber: formData.phoneNumber,
+        email: formData.email,
+        residentialAddress: formData.residentialAddress,
+        county: "",
+        constituency: "",
+        institutionName: "",
+        institutionType: "Secondary School",
+        courseOrForm: "",
+        yearOfStudy: "",
+        admissionNumber: "",
+        academicYear: new Date().getFullYear().toString(),
+        studentRegistrationNumber: "",
+        parentFullName: "",
+        parentRelationship: "",
+        parentPhone: "",
+        parentOccupation: "",
+        numberOfDependants: 0,
+        householdMonthlyIncome: 0,
+        totalFees: "",
+        amountPaid: "0",
+        amountRequested: "",
+        previousBursaryReceived: "No",
+        previousBursaryAmount: "0",
+        otherFinancialAssistance: "",
+        reasonForApplication: "",
+      });
+      setDocuments([]);
+      setDeclarationAccepted(false);
+      setError("");
+    }
+  }
+
+  async function handleSaveDraft() {
+    setSavingDraft(true);
+    setError("");
+    try {
+      // Save draft locally
+      localStorage.setItem("bursary_draft", JSON.stringify({
+        formData,
+        documents: documents.map((d) => ({ documentType: d.documentType, fileName: d.fileName })),
+        savedAt: new Date().toISOString(),
+      }));
+      setDraftSaved(true);
+      setTimeout(() => setDraftSaved(false), 3000);
+    } catch (err) {
+      console.error("Error saving draft:", err);
+      setError("Failed to save draft. Please try again.");
+    } finally {
+      setSavingDraft(false);
+    }
   }
 
   async function confirmSubmit() {
@@ -574,7 +641,24 @@ function CitizenBursaryForm() {
           </section>
 
           {/* Submit Buttons */}
-          <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+          <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end", flexWrap: "wrap" }}>
+            <button type="button" className="gov-btn gov-btn-ghost" onClick={handlePrint}>
+              <Printer size={18} />
+              Print
+            </button>
+            <button type="button" className="gov-btn gov-btn-ghost" onClick={handleReset}>
+              <RotateCcw size={18} />
+              Reset
+            </button>
+            <button type="button" className="gov-btn gov-btn-secondary" onClick={handleSaveDraft} disabled={savingDraft}>
+              <Save size={18} />
+              {savingDraft ? "Saving..." : "Save Draft"}
+            </button>
+            {draftSaved && (
+              <span style={{ color: "#10b981", fontSize: "14px", display: "flex", alignItems: "center", gap: "4px" }}>
+                <CheckCircle size={16} /> Draft saved
+              </span>
+            )}
             <button type="button" className="gov-btn gov-btn-secondary" onClick={() => navigate("/citizen/dashboard")}>
               Cancel
             </button>

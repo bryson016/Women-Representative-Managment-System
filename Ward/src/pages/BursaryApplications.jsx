@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import {
   Search,
   Filter,
@@ -50,6 +51,7 @@ const INSTITUTION_TYPES = [
 
 function BursaryApplications({ onLogout }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeItem, setActiveItem] = useState("bursary");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -100,6 +102,66 @@ function BursaryApplications({ onLogout }) {
   const handleItemClick = (id) => {
     if (id === "logout") {
       onLogout();
+      return;
+    }
+    if (id === "dashboard") {
+      navigate("/dashboard");
+      return;
+    }
+    if (id === "images") {
+      navigate("/images");
+      return;
+    }
+    if (id === "citizens") {
+      navigate("/citizens");
+      return;
+    }
+    if (id === "complaints") {
+      navigate("/complaints");
+      return;
+    }
+    if (id === "bursary") {
+      navigate("/bursary");
+      return;
+    }
+    if (id === "beneficiaries") {
+      navigate("/beneficiaries");
+      return;
+    }
+    if (id === "payments") {
+      navigate("/payments");
+      return;
+    }
+    if (id === "bursary-programs") {
+      navigate("/bursary-programs");
+      return;
+    }
+    if (id === "projects") {
+      navigate("/projects");
+      return;
+    }
+    if (id === "meetings") {
+      navigate("/meetings");
+      return;
+    }
+    if (id === "staff") {
+      navigate("/staff");
+      return;
+    }
+    if (id === "budget") {
+      navigate("/budget");
+      return;
+    }
+    if (id === "reports") {
+      navigate("/reports");
+      return;
+    }
+    if (id === "notifications") {
+      navigate("/notifications");
+      return;
+    }
+    if (id === "settings") {
+      navigate("/settings");
       return;
     }
     setActiveItem(id);
@@ -237,6 +299,7 @@ function BursaryApplications({ onLogout }) {
     <div className={`dashboard-shell ${isDarkMode ? "dark-mode" : ""}`}>
       <Sidebar
         activeItem={activeItem}
+        userRole={user?.role}
         onItemClick={handleItemClick}
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((prev) => !prev)}

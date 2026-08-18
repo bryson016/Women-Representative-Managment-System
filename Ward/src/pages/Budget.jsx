@@ -52,12 +52,32 @@ function Budget({ onLogout }) {
         navigate("/dashboard");
         return;
       }
+      if (id === "images") {
+        navigate("/images");
+        return;
+      }
       if (id === "citizens") {
         navigate("/citizens");
         return;
       }
       if (id === "complaints") {
         navigate("/complaints");
+        return;
+      }
+      if (id === "bursary") {
+        navigate("/bursary");
+        return;
+      }
+      if (id === "beneficiaries") {
+        navigate("/beneficiaries");
+        return;
+      }
+      if (id === "payments") {
+        navigate("/payments");
+        return;
+      }
+      if (id === "bursary-programs") {
+        navigate("/bursary-programs");
         return;
       }
       if (id === "projects") {
@@ -72,8 +92,16 @@ function Budget({ onLogout }) {
         navigate("/staff");
         return;
       }
+      if (id === "budget") {
+        navigate("/budget");
+        return;
+      }
       if (id === "reports") {
         navigate("/reports");
+        return;
+      }
+      if (id === "notifications") {
+        navigate("/notifications");
         return;
       }
       if (id === "settings") {

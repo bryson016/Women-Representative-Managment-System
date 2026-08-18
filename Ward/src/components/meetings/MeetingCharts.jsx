@@ -41,7 +41,7 @@ function MeetingCharts({ meetings }) {
   const typeColors = {
     "Ward Development Committee": "#7c3aed",
     "Public Baraza": "#a78bfa",
-    "Budget Review": "#8b5cf6",
+    "Budget Review": "#7c3aed",
     "Planning Session": "#1d4ed8",
     "Town Hall": "#7c3aed",
     "Project Steering Committee": "#b91c1c",
@@ -158,7 +158,7 @@ function MeetingCharts({ meetings }) {
                 }}>
                   <div style={{
                     width: "2.4rem", height: "2.4rem", borderRadius: "0.55rem",
-                    background: "#f5f3ff", color: "#8b5cf6", display: "grid",
+                    background: "#f5f3ff", color: "#7c3aed", display: "grid",
                     placeItems: "center", flexShrink: 0,
                   }}>
                     <div style={{ textAlign: "center", lineHeight: 1.05 }}>
@@ -205,7 +205,7 @@ function MeetingCharts({ meetings }) {
                 <div style={{
                   height: "100%",
                   width: `${(count / maxVillage) * 100}%`,
-                  background: "#8b5cf6",
+                  background: "#7c3aed",
                   borderRadius: "999px",
                   transition: "width 0.5s ease",
                 }} />

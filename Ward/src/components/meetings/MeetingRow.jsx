@@ -51,7 +51,7 @@ function MeetingRow({ meeting, index, onView, onEdit, onDelete, onMarkComplete, 
             <div style={{
               height: "100%",
               width: `${attendanceRate}%`,
-              background: attendanceRate >= 70 ? "#8b5cf6" : attendanceRate >= 40 ? "#a78bfa" : "#b91c1c",
+              background: attendanceRate >= 70 ? "#7c3aed" : attendanceRate >= 40 ? "#a78bfa" : "#b91c1c",
               borderRadius: "999px",
               transition: "width 0.5s ease",
             }} />

@@ -26,7 +26,7 @@ function ProjectDetails({ project, onBack }) {
 
   const getProgressColor = (progress) => {
     if (progress >= 100) return "#6d28d9";
-    if (progress >= 60) return "#8b5cf6";
+    if (progress >= 60) return "#7c3aed";
     if (progress >= 30) return "#a78bfa";
     return "#b91c1c";
   };
@@ -140,7 +140,7 @@ function ProjectDetails({ project, onBack }) {
               </div>
               <div className="info-item">
                 <span className="info-label">Amount Spent</span>
-                <span className="info-value" style={{ fontWeight: 700, color: "#8b5cf6" }}>{formatKES(project.amountSpent)}</span>
+                <span className="info-value" style={{ fontWeight: 700, color: "#7c3aed" }}>{formatKES(project.amountSpent)}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Remaining Balance</span>
