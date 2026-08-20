@@ -318,12 +318,11 @@ function BursaryPrograms({ onLogout }) {
                           {formatDate(program.applicationDeadline)}
                         </td>
                         <td style={{ padding: "12px" }}>
-                          <span className="status-pill" style={{
+                          <span className={`status-pill ${STATUS_COLORS[program.status] || ""}`} style={{
                             padding: "4px 12px",
                             borderRadius: "20px",
                             fontSize: "12px",
                             fontWeight: 500,
-                            ...STATUS_COLORS[program.status] || {},
                           }}>
                             {program.status}
                           </span>

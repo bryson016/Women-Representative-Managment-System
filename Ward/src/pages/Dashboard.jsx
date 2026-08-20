@@ -15,7 +15,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CheckCircle, GraduationCap, Clock, XCircle, Wallet, BarChart3 } from "lucide-react";
+import { CheckCircle, GraduationCap, Clock, XCircle, Wallet, BarChart3, Users } from "lucide-react";
 import Sidebar from "../components/layout/Sidebar";
 import TopNavbar from "../components/layout/TopNavbar";
 import DashboardCard from "../components/DashboardCard";
@@ -187,7 +187,7 @@ function Dashboard({ onLogout }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" }}
             >
-              Hon. Nancy Wangari
+              Hon. Emmah Siameto
             </motion.h2>
             <motion.p
               initial={{ opacity: 0, y: 24 }}
@@ -243,34 +243,18 @@ function Dashboard({ onLogout }) {
               >
                 <div className="stat-head">
                   <div className="stat-icon" style={{ background: "#7c3aed15", color: "#7c3aed" }}>
-                    <GraduationCap size={18} />
+                    <Users size={18} />
                   </div>
                 </div>
-                <h3>{bursaryStats.totalApplications}</h3>
-                <h4>Total Applications</h4>
-                <p>{bursaryStats.pending} pending review</p>
+                <h3>{bursaryStats.totalBeneficiaries}</h3>
+                <h4>Total Beneficiaries</h4>
+                <p>{bursaryStats.activeBeneficiaries} active</p>
               </motion.div>
               <motion.div
                 className="stat-card"
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55, duration: 0.28 }}
-                whileHover={{ y: -4 }}
-              >
-                <div className="stat-head">
-                  <div className="stat-icon" style={{ background: "#f59e0b15", color: "#f59e0b" }}>
-                    <Clock size={18} />
-                  </div>
-                </div>
-                <h3>{bursaryStats.underReview}</h3>
-                <h4>Under Review</h4>
-                <p>Awaiting decision</p>
-              </motion.div>
-              <motion.div
-                className="stat-card"
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6, duration: 0.28 }}
                 whileHover={{ y: -4 }}
               >
                 <div className="stat-head">
@@ -281,6 +265,22 @@ function Dashboard({ onLogout }) {
                 <h3>{bursaryStats.approved}</h3>
                 <h4>Approved</h4>
                 <p>KES {bursaryStats.totalAmountApproved?.toLocaleString() || 0}</p>
+              </motion.div>
+              <motion.div
+                className="stat-card"
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.28 }}
+                whileHover={{ y: -4 }}
+              >
+                <div className="stat-head">
+                  <div className="stat-icon" style={{ background: "#f59e0b15", color: "#f59e0b" }}>
+                    <Clock size={18} />
+                  </div>
+                </div>
+                <h3>{bursaryStats.pending}</h3>
+                <h4>Pending</h4>
+                <p>Awaiting review</p>
               </motion.div>
               <motion.div
                 className="stat-card"
@@ -310,9 +310,9 @@ function Dashboard({ onLogout }) {
                     <Wallet size={18} />
                   </div>
                 </div>
-                <h3>{bursaryStats.disbursed}</h3>
-                <h4>Disbursed</h4>
-                <p>Payments made</p>
+                <h3>KES {bursaryStats.totalDisbursedAmount?.toLocaleString() || 0}</h3>
+                <h4>Total Disbursed</h4>
+                <p>{bursaryStats.successfulPayments} successful payments</p>
               </motion.div>
               <motion.div
                 className="stat-card"
@@ -326,9 +326,9 @@ function Dashboard({ onLogout }) {
                     <BarChart3 size={18} />
                   </div>
                 </div>
-                <h3>KES {bursaryStats.totalAmountRequested?.toLocaleString() || 0}</h3>
-                <h4>Total Requested</h4>
-                <p>All applications</p>
+                <h3>KES {bursaryStats.totalRemainingBalance?.toLocaleString() || 0}</h3>
+                <h4>Remaining Budget</h4>
+                <p>Available funds</p>
               </motion.div>
             </>
           )}

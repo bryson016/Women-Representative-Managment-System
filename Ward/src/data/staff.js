@@ -29,8 +29,8 @@ const staff = [
   {
     id: 1,
     staffId: "STF-001",
-    firstName: "Gabriel",
-    lastName: "Kithaka",
+    firstName: "EMMAH",
+    lastName: "SIUMATE",
     role: "Ward Administrator",
     department: "Administration",
     phone: "+254 700 111 222",

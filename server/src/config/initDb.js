@@ -32,6 +32,23 @@ async function runBursaryMigration(connection) {
     // Select the database first
     await connection.query(`USE \`${process.env.DB_NAME}\``);
 
+    // Run bursary programs migration first (needed for foreign keys)
+    const [programTables] = await connection.query(
+      "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN ('bursary_programs')",
+      [process.env.DB_NAME]
+    );
+    if (programTables.length === 0) {
+      console.log("Running bursary programs migration...");
+      const programsSql = fs.readFileSync(
+        path.join(__dirname, "../../database/migrate_bursary_enhancements.sql"),
+        "utf8"
+      );
+      await connection.query(programsSql);
+      console.log("Bursary programs migration completed.");
+    } else {
+      console.log("Bursary programs table already exists.");
+    }
+
     const [tables] = await connection.query(
       "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN ('bursary_applications', 'bursary_application_documents', 'bursary_application_history')",
       [process.env.DB_NAME]
@@ -48,6 +65,25 @@ async function runBursaryMigration(connection) {
       console.log("Bursary migration completed.");
     } else {
       console.log("Bursary tables already exist.");
+    }
+
+    // Run full bursary enhancements (beneficiaries, payments, audit logs)
+    const [enhancementTables] = await connection.query(
+      "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN ('bursary_beneficiaries', 'bursary_payments', 'audit_logs')",
+      [process.env.DB_NAME]
+    );
+    const existingEnhancementTables = enhancementTables.map((t) => t.TABLE_NAME);
+
+    if (!existingEnhancementTables.includes("bursary_beneficiaries")) {
+      console.log("Running bursary enhancements migration...");
+      const enhancementSql = fs.readFileSync(
+        path.join(__dirname, "../../database/migrate_bursary_full.sql"),
+        "utf8"
+      );
+      await connection.query(enhancementSql);
+      console.log("Bursary enhancements migration completed.");
+    } else {
+      console.log("Bursary enhancement tables already exist.");
     }
   } catch (err) {
     console.error("Bursary migration error:", err.message);

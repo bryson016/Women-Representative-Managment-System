@@ -20,6 +20,7 @@ import {
   GraduationCap,
   AlertCircle,
   BarChart3,
+  Plus,
 } from "lucide-react";
 import Sidebar from "../components/layout/Sidebar";
 import TopNavbar from "../components/layout/TopNavbar";
@@ -29,6 +30,7 @@ import {
   updateBursaryStatus,
   getBursaryStats,
   getBursaryReports,
+  createBursaryApplication,
 } from "../services/bursaryApi";
 
 const STATUS_COLORS = {
@@ -70,6 +72,24 @@ function BursaryApplications({ onLogout }) {
     reviewComments: "",
   });
   const [submitting, setSubmitting] = useState(false);
+
+  // New Application Modal
+  const [showNewApplicationModal, setShowNewApplicationModal] = useState(false);
+  const [newApplicationForm, setNewApplicationForm] = useState({
+    fullName: "",
+    nationalId: "",
+    phoneNumber: "",
+    email: "",
+    ward: "Westlands",
+    institutionName: "",
+    institutionType: "University",
+    courseOrForm: "",
+    academicYear: new Date().getFullYear().toString(),
+    totalFees: "",
+    amountPaid: "",
+    amountRequested: "",
+    reasonForApplication: "",
+  });
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -239,7 +259,7 @@ function BursaryApplications({ onLogout }) {
 
     setSubmitting(true);
     try {
-      await updateBursaryStatus(selectedApplication.id, reviewForm);
+      const response = await updateBursaryStatus(selectedApplication.id, reviewForm);
       setShowReviewModal(false);
       setReviewForm({ status: "", approvedAmount: "", rejectionReason: "", reviewComments: "" });
       loadApplications();
@@ -248,6 +268,10 @@ function BursaryApplications({ onLogout }) {
       if (selectedApplication) {
         const data = await getBursaryApplication(selectedApplication.id);
         setSelectedApplication(data.application);
+      }
+      // Show beneficiary creation notification
+      if (response.beneficiaryCreated) {
+        alert(`Application approved and beneficiary created successfully!\nBeneficiary Number: ${response.beneficiaryNumber}`);
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -265,6 +289,44 @@ function BursaryApplications({ onLogout }) {
       reviewComments: "",
     });
     setShowReviewModal(true);
+  }
+
+  async function handleCreateApplication() {
+    setSubmitting(true);
+    try {
+      const data = {
+        ...newApplicationForm,
+        totalFees: parseFloat(newApplicationForm.totalFees) || 0,
+        amountPaid: parseFloat(newApplicationForm.amountPaid) || 0,
+        amountRequested: parseFloat(newApplicationForm.amountRequested) || 0,
+        institutionType: newApplicationForm.institutionType,
+        academicYear: newApplicationForm.academicYear,
+      };
+      await createBursaryApplication(data);
+      setShowNewApplicationModal(false);
+      setNewApplicationForm({
+        fullName: "",
+        nationalId: "",
+        phoneNumber: "",
+        email: "",
+        ward: "Westlands",
+        institutionName: "",
+        institutionType: "University",
+        courseOrForm: "",
+        academicYear: new Date().getFullYear().toString(),
+        totalFees: "",
+        amountPaid: "",
+        amountRequested: "",
+        reasonForApplication: "",
+      });
+      loadApplications();
+      loadStats();
+    } catch (error) {
+      console.error("Error creating application:", error);
+      alert(error.response?.data?.message || "Failed to create application.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function formatCurrency(amount) {
@@ -290,8 +352,11 @@ function BursaryApplications({ onLogout }) {
         { title: "Approved", value: stats.approved, icon: CheckCircle, color: "#10b981" },
         { title: "Rejected", value: stats.rejected, icon: XCircle, color: "#ef4444" },
         { title: "Disbursed", value: stats.disbursed, icon: Wallet, color: "#059669" },
-        { title: "Total Requested", value: formatCurrency(stats.totalAmountRequested), icon: Wallet, color: "#6366f1" },
-        { title: "Total Approved", value: formatCurrency(stats.totalAmountApproved), icon: CheckCircle, color: "#10b981" },
+        { title: "Total Beneficiaries", value: stats.totalBeneficiaries, icon: Users, color: "#7c3aed" },
+        { title: "Total Disbursed", value: formatCurrency(stats.totalDisbursedAmount), icon: Wallet, color: "#059669" },
+        { title: "Remaining Balance", value: formatCurrency(stats.totalRemainingBalance), icon: BarChart3, color: "#6366f1" },
+        { title: "Successful Payments", value: stats.successfulPayments, icon: CheckCircle, color: "#10b981" },
+        { title: "Failed Payments", value: stats.failedPayments, icon: XCircle, color: "#ef4444" },
       ]
     : [];
 
@@ -351,6 +416,13 @@ function BursaryApplications({ onLogout }) {
             <div className="card-title-row">
               <h3>Bursary Applications</h3>
               <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  className="gov-btn gov-btn-primary"
+                  onClick={() => setShowNewApplicationModal(true)}
+                >
+                  <Plus size={16} />
+                  <span>New Application</span>
+                </button>
                 <button
                   className="gov-btn gov-btn-ghost"
                   onClick={() => setShowFilters(!showFilters)}
@@ -448,9 +520,37 @@ function BursaryApplications({ onLogout }) {
                 <p>Loading applications...</p>
               </div>
             ) : applications.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "40px", color: "#64748b" }}>
-                <FileText size={48} style={{ marginBottom: "16px", opacity: 0.5 }} />
-                <p>No bursary applications found.</p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid #e2e8f0" }}>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Application #</th>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Applicant</th>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Institution</th>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Ward</th>
+                      <th style={{ padding: "12px", textAlign: "right", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Amount</th>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Status</th>
+                      <th style={{ padding: "12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Date</th>
+                      <th style={{ padding: "12px", textAlign: "center", fontSize: "12px", fontWeight: 600, color: "#64748b", textTransform: "uppercase" }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colSpan={8} style={{ padding: "40px", textAlign: "center", color: "#64748b" }}>
+                        <FileText size={48} style={{ marginBottom: "16px", opacity: 0.5, display: "block", margin: "0 auto 16px" }} />
+                        <p>No bursary applications found.</p>
+                        <button
+                          className="gov-btn gov-btn-primary"
+                          style={{ marginTop: "16px" }}
+                          onClick={() => setShowNewApplicationModal(true)}
+                        >
+                          <Plus size={16} />
+                          <span>Add New Application</span>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             ) : (
               <>
@@ -491,12 +591,11 @@ function BursaryApplications({ onLogout }) {
                             {formatCurrency(app.amountRequested)}
                           </td>
                           <td style={{ padding: "12px" }}>
-                            <span className={`status-pill ${app.status.toLowerCase().replace("_", "-")}`} style={{
+                            <span className={`status-pill ${app.status.toLowerCase().replace("_", "-")} ${STATUS_COLORS[app.status] || ""}`} style={{
                               padding: "4px 12px",
                               borderRadius: "20px",
                               fontSize: "12px",
                               fontWeight: 500,
-                              ...STATUS_COLORS[app.status] || {}
                             }}>
                               {app.status.replace("_", " ")}
                             </span>
@@ -906,9 +1005,8 @@ function BursaryApplications({ onLogout }) {
                 </h3>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "12px" }}>
                   <div><strong>Current Status:</strong> 
-                    <span className={`status-pill ${selectedApplication.status.toLowerCase().replace("_", "-")}`} style={{
+                    <span className={`status-pill ${selectedApplication.status.toLowerCase().replace("_", "-")} ${STATUS_COLORS[selectedApplication.status] || ""}`} style={{
                       marginLeft: "8px", padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 500,
-                      ...STATUS_COLORS[selectedApplication.status] || {}
                     }}>
                       {selectedApplication.status.replace("_", " ")}
                     </span>
@@ -1043,6 +1141,168 @@ function BursaryApplications({ onLogout }) {
                 disabled={submitting}
               >
                 {submitting ? "Updating..." : "Update Status"}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* New Application Modal */}
+      {showNewApplicationModal && (
+        <div className="modal-overlay" onClick={() => setShowNewApplicationModal(false)}>
+          <motion.div
+            className="modal-content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "700px", maxHeight: "90vh", overflowY: "auto" }}
+          >
+            <div className="modal-header">
+              <h2>New Bursary Application</h2>
+              <button className="icon-btn soft" onClick={() => setShowNewApplicationModal(false)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "12px", marginBottom: "16px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Full Name *</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.fullName}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, fullName: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>National ID *</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.nationalId}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, nationalId: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Phone Number *</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.phoneNumber}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, phoneNumber: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Email</label>
+                  <input
+                    type="email"
+                    value={newApplicationForm.email}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, email: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Ward</label>
+                  <select
+                    value={newApplicationForm.ward}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, ward: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  >
+                    <option value="Westlands">Westlands</option>
+                    <option value="Kangemi">Kangemi</option>
+                    <option value="Kitisuru">Kitisuru</option>
+                    <option value="Parklands">Parklands</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Institution Name *</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.institutionName}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, institutionName: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Institution Type *</label>
+                  <select
+                    value={newApplicationForm.institutionType}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, institutionType: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  >
+                    {INSTITUTION_TYPES.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Course / Form</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.courseOrForm}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, courseOrForm: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Academic Year *</label>
+                  <input
+                    type="text"
+                    value={newApplicationForm.academicYear}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, academicYear: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Total Fees (KES) *</label>
+                  <input
+                    type="number"
+                    value={newApplicationForm.totalFees}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, totalFees: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Amount Paid (KES)</label>
+                  <input
+                    type="number"
+                    value={newApplicationForm.amountPaid}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, amountPaid: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Amount Requested (KES) *</label>
+                  <input
+                    type="number"
+                    value={newApplicationForm.amountRequested}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, amountRequested: e.target.value })}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px" }}
+                  />
+                </div>
+                <div style={{ gridColumn: "1 / -1" }}>
+                  <label style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px" }}>Reason for Application</label>
+                  <textarea
+                    value={newApplicationForm.reasonForApplication}
+                    onChange={(e) => setNewApplicationForm({ ...newApplicationForm, reasonForApplication: e.target.value })}
+                    rows={3}
+                    style={{ width: "100%", padding: "10px 12px", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "14px", resize: "vertical" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button className="gov-btn gov-btn-secondary" onClick={() => setShowNewApplicationModal(false)} disabled={submitting}>
+                Cancel
+              </button>
+              <button
+                className="gov-btn gov-btn-primary"
+                onClick={handleCreateApplication}
+                disabled={submitting}
+              >
+                {submitting ? "Creating..." : "Create Application"}
               </button>
             </div>
           </motion.div>

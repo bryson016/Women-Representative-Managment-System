@@ -1,6 +1,6 @@
 const express = require("express");
 const { authenticateToken } = require("../middleware/authMiddleware");
-const { requireRole } = require("../middleware/roleMiddleware");
+const { requireRole, requireMinRole, isFinanceOfficer } = require("../middleware/roleMiddleware");
 const multer = require("multer");
 const {
   getAllApplications,
@@ -8,6 +8,7 @@ const {
   getMyApplications,
   getMyApplicationById,
   createApplication,
+  createBeneficiary,
   updateApplication,
   updateApplicationStatus,
   deleteApplication,
@@ -19,7 +20,12 @@ const {
   getBursaryStats,
   getBursaryReports,
   getBeneficiaries,
+  getBeneficiaryById,
+  exportBeneficiaries,
+  getBeneficiaryFilterOptions,
+  getAuditLogs,
   getPayments,
+  createPayment,
   getPrograms,
   createProgram,
   updateProgram,
@@ -59,6 +65,7 @@ const upload = multer({
 router.get("/applications", authenticateToken, requireRole(["admin", "officer", "staff"]), getAllApplications);
 router.get("/export", authenticateToken, requireRole(["admin", "officer", "staff"]), exportApplications);
 router.get("/applications/:id", authenticateToken, requireRole(["admin", "officer", "staff"]), getApplicationById);
+router.post("/applications", authenticateToken, requireRole(["admin", "officer", "staff", "citizen"]), createApplication);
 router.put("/applications/:id", authenticateToken, requireRole(["admin", "officer", "staff"]), updateApplication);
 router.put("/applications/:id/status", authenticateToken, requireRole(["admin", "officer", "staff"]), updateApplicationStatus);
 router.delete("/applications/:id", authenticateToken, requireRole(["admin"]), deleteApplication);
@@ -69,9 +76,17 @@ router.get("/reports", authenticateToken, requireRole(["admin", "officer", "staf
 
 // Beneficiaries
 router.get("/beneficiaries", authenticateToken, requireRole(["admin", "officer", "staff"]), getBeneficiaries);
+router.get("/beneficiaries/filters", authenticateToken, requireRole(["admin", "officer", "staff"]), getBeneficiaryFilterOptions);
+router.get("/beneficiaries/export", authenticateToken, requireRole(["admin", "officer", "staff"]), exportBeneficiaries);
+router.get("/beneficiaries/:id", authenticateToken, requireRole(["admin", "officer", "staff"]), getBeneficiaryById);
+router.post("/beneficiaries", authenticateToken, requireRole(["admin", "officer"]), createBeneficiary);
+
+// Audit Logs
+router.get("/audit-logs", authenticateToken, requireRole(["admin", "officer", "staff", "super_admin", "viewer"]), getAuditLogs);
 
 // Payments
-router.get("/payments", authenticateToken, requireRole(["admin", "officer", "staff"]), getPayments);
+router.get("/payments", authenticateToken, requireRole(["admin", "officer", "staff", "finance_officer", "super_admin", "viewer"]), getPayments);
+router.post("/payments", authenticateToken, requireMinRole("finance_officer"), createPayment);
 
 // Programs
 router.get("/programs", authenticateToken, requireRole(["admin", "officer", "staff"]), getPrograms);
@@ -86,7 +101,6 @@ router.put("/notifications/:id/read", authenticateToken, markNotificationAsRead)
 // Citizen routes
 router.get("/my-applications", authenticateToken, requireRole(["citizen"]), getMyApplications);
 router.get("/my-applications/:id", authenticateToken, requireRole(["citizen"]), getMyApplicationById);
-router.post("/applications", authenticateToken, requireRole(["citizen"]), createApplication);
 router.put("/my-applications/:id", authenticateToken, requireRole(["citizen"]), updateApplication);
 router.put("/my-applications/:id/withdraw", authenticateToken, requireRole(["citizen"]), withdrawApplication);
 router.delete("/my-applications/:id", authenticateToken, requireRole(["citizen"]), deleteDraftApplication);

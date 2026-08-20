@@ -48,6 +48,11 @@ export async function getBursaryReports(params = {}) {
   return response.data;
 }
 
+export async function createBursaryApplication(data) {
+  const response = await api.post("/api/bursary/applications", data);
+  return response.data;
+}
+
 export async function exportBursaryApplications(params = {}) {
   const response = await api.get("/api/bursary/export", { params, responseType: "blob" });
   return response.data;
@@ -59,9 +64,37 @@ export async function getBeneficiaries(params = {}) {
   return response.data;
 }
 
+export async function getBeneficiaryById(id) {
+  const response = await api.get(`/api/bursary/beneficiaries/${id}`);
+  return response.data;
+}
+
+export async function createBeneficiary(data) {
+  const response = await api.post("/api/bursary/beneficiaries", data);
+  return response.data;
+}
+
+export async function exportBeneficiaries(params = {}) {
+  const response = await api.get("/api/bursary/beneficiaries/export", {
+    params,
+    responseType: "blob",
+  });
+  return response.data;
+}
+
+export async function getBeneficiaryFilters() {
+  const response = await api.get("/api/bursary/beneficiaries/filters");
+  return response.data;
+}
+
 // Payments
 export async function getPayments(params = {}) {
   const response = await api.get("/api/bursary/payments", { params });
+  return response.data;
+}
+
+export async function createPayment(data) {
+  const response = await api.post("/api/bursary/payments", data);
   return response.data;
 }
 

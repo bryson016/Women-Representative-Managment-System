@@ -1,8 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
+  /* ===== CENTRALIZED APP LAYOUT ===== */
+  --sidebar-width: 274px;
+  --sidebar-width-collapsed: 82px;
+  --content-padding: 28px;
+  --layout-gap: 16px;
+  --page-max-width: 1600px;
+  --bottom-bar-height: 58px;
+
+  /* ===== GOV DESIGN TOKENS ===== */
   --gov-primary: #7c3aed;
   --gov-primary-2: #7c3aed;
   --gov-primary-light: #a78bfa;
@@ -557,18 +564,127 @@ body {
 .dashboard-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, var(--sidebar-width)) minmax(0, 1fr);
   background: #f3f6fb;
 }
 
 .dashboard-main {
-  padding: 1rem 1.2rem 1.2rem;
+  padding: var(--layout-gap);
   display: grid;
-  gap: 1rem;
+  gap: var(--layout-gap);
+  min-width: 0;
+  width: 100%;
+}
+
+/* Shared page container — used by every dashboard page */
+.page-container {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  padding: var(--content-padding);
+  box-sizing: border-box;
+}
+
+/* Payments page inner grids */
+.payments-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--layout-gap);
+  margin-bottom: var(--layout-gap);
+}
+
+.payments-analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: var(--layout-gap);
+  margin-bottom: var(--layout-gap);
+}
+
+.payments-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: var(--layout-gap);
+}
+
+/* Payments card */
+.payments-card {
+  background: #fff;
+  border: 1px solid var(--gov-border);
+  border-radius: 0.9rem;
+  box-shadow: var(--gov-shadow-soft);
+  padding: 1.1rem;
+  min-width: 0;
+}
+
+.payments-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--layout-gap);
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.payments-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gov-gray-900);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.payments-subtitle {
+  font-size: 0.85rem;
+  color: var(--gov-gray-500);
+  margin: 0.2rem 0 0;
+}
+
+.payments-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Payments buttons */
+.payments-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.payments-btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.payments-btn-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+}
+
+.payments-btn-outline {
+  background: #fff;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+
+.payments-btn-outline:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .sidebar {
-  width: 270px;
+  width: var(--sidebar-width);
   background: linear-gradient(180deg, #6d28d9 0%, #7c3aed 100%);
   color: #e8e4f5;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -581,7 +697,7 @@ body {
 }
 
 .sidebar.collapsed {
-  width: 82px;
+  width: var(--sidebar-width-collapsed);
 }
 
 .sidebar-head {
@@ -1853,7 +1969,19 @@ th {
     top: 0;
     bottom: 0;
     transform: translateX(-100%);
-    width: 270px !important;
+    width: var(--sidebar-width) !important;
+  }
+
+  .payments-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payments-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payments-bottom-grid {
+    grid-template-columns: 1fr;
   }
 
   .sidebar.mobile-open {
@@ -3966,7 +4094,7 @@ th {
 }
 
 .citizen-sidebar {
-  width: 270px;
+  width: var(--sidebar-width);
   background: linear-gradient(180deg, #6d28d9 0%, #7c3aed 100%);
   color: #e8e4f5;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -5613,7 +5741,7 @@ th {
     top: 0;
     bottom: 0;
     transform: translateX(-100%);
-    width: 270px !important;
+    width: var(--sidebar-width) !important;
   }
 
   .citizen-sidebar.mobile-open {
@@ -6922,3 +7050,164 @@ th {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ============================================================
+   BENEFICIARIES PAGE - Government of Kenya admin dashboard
+   ============================================================ */
+
+.gov-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--gov-gray-700);
+  background: var(--gov-white);
+  border: 1px solid var(--gov-border);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gov-input:focus-visible {
+  outline: none;
+  border-color: var(--gov-focus);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12);
+}
+
+.gov-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gov-gray-700);
+  background: var(--gov-white);
+  border: 1px solid var(--gov-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.gov-btn-secondary:hover {
+  background: var(--gov-gray-50);
+  border-color: var(--gov-gray-300);
+}
+
+.gov-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: var(--gov-gray-700);
+}
+
+.gov-table thead th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  border-bottom: 1px solid var(--gov-border);
+}
+
+.gov-table tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--gov-border);
+  vertical-align: middle;
+}
+
+.gov-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.gov-table tbody tr.hover-row:hover {
+  background: var(--gov-gray-50);
+}
+
+.gov-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-top: 1px solid var(--gov-border);
+  font-size: 13px;
+  color: var(--gov-gray-500);
+}
+
+.pagination-bar .icon-btn.active {
+  background: var(--gov-primary);
+  color: var(--gov-white);
+  border-color: var(--gov-primary);
+}
+
+.beneficiary-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Responsive: table horizontal scroll on small screens */
+@media (max-width: 768px) {
+  .bursary-content {
+    padding: 16px;
+  }
+
+  .card-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination-bar {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
+
+

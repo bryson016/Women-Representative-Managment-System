@@ -76,7 +76,7 @@ export const recentReports = [
     name: "Ward Development Projects Status",
     category: "Development",
     period: "Jul 2026",
-    generatedBy: "Mary Wanjiku",
+    generatedBy: "Emmah Siameto",
     date: "2026-07-14",
     status: "Completed",
     format: "Excel",

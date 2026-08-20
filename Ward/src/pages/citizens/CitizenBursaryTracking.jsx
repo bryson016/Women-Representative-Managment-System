@@ -292,12 +292,11 @@ Submitted: ${formatDate(selectedApplication.submittedAt || selectedApplication.c
                     )}
                   </div>
                   <div style={{ flex: "1 1 120px", textAlign: "center" }}>
-                    <span className={`status-pill ${app.status.toLowerCase().replace("_", "-")}`} style={{
+                    <span className={`status-pill ${app.status.toLowerCase().replace("_", "-")} ${STATUS_COLORS[app.status] || ""}`} style={{
                       padding: "4px 12px",
                       borderRadius: "20px",
                       fontSize: "12px",
                       fontWeight: 500,
-                      ...STATUS_COLORS[app.status] || {}
                     }}>
                       {app.status.replace("_", " ")}
                     </span>
@@ -340,9 +339,8 @@ Submitted: ${formatDate(selectedApplication.submittedAt || selectedApplication.c
               <div style={{ marginBottom: "20px", padding: "16px", background: "#f8fafc", borderRadius: "12px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                   <span style={{ fontSize: "18px", fontWeight: 700, color: "#7c3aed", letterSpacing: "1px" }}>{selectedApplication.applicationNumber}</span>
-                  <span className={`status-pill ${selectedApplication.status.toLowerCase().replace("_", "-")}`} style={{
+                  <span className={`status-pill ${selectedApplication.status.toLowerCase().replace("_", "-")} ${STATUS_COLORS[selectedApplication.status] || ""}`} style={{
                     padding: "4px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: 500,
-                    ...STATUS_COLORS[selectedApplication.status] || {}
                   }}>
                     {selectedApplication.status.replace("_", " ")}
                   </span>
