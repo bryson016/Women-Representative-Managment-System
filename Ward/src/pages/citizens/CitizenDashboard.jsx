@@ -13,6 +13,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import CitizenLayout from "../../components/citizens/CitizenLayout";
+import WelcomeSection from "../../components/citizens/WelcomeSection";
 import {
   getCitizenComplaints,
   getWardProjects,
@@ -173,31 +174,8 @@ function CitizenDashboard() {
 
   return (
     <CitizenLayout activeItem={activeItem} onItemClick={handleItemClick} breadcrumb={breadcrumb}>
-      {/* Hero Section */}
-      <motion.section
-        className="welcome-banner citizen-hero"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15, ease: "easeOut" }}
-          >
-            Welcome to Your Ward
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.25, ease: "easeOut" }}
-            className="citizen-hero-subtitle"
-          >
-            Report issues, track services, follow development projects, and stay connected with your community.
-          </motion.p>
-        </div>
-      </motion.section>
+      {/* Hero + Inspiring Stories */}
+      <WelcomeSection />
 
       {/* Quick Actions */}
       <motion.section
