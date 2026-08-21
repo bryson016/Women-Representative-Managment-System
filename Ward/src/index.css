@@ -4229,6 +4229,339 @@ th {
   gap: 0.75rem;
 }
 
+/* ===== WELCOME SECTION (Hero + Stories) ===== */
+.welcome-section-hero {
+  position: relative;
+  min-height: 360px;
+  padding: 56px 52px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 26px;
+}
+
+.welcome-section-hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  border-radius: 26px;
+}
+
+.welcome-section-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(15, 23, 42, 0.82) 0%,
+    rgba(76, 29, 149, 0.62) 55%,
+    rgba(124, 58, 237, 0.28) 100%
+  );
+  z-index: 1;
+}
+
+.welcome-section-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.welcome-section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  color: #f5f3ff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+
+.welcome-section-content h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+.welcome-section-subtitle {
+  margin: 0 0 1.6rem !important;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.65;
+  max-width: 580px;
+}
+
+.welcome-section-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%);
+  color: #ffffff;
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.35);
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.welcome-section-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(124, 58, 237, 0.45);
+  filter: brightness(1.06);
+}
+
+.welcome-br {
+  display: block;
+}
+
+.welcome-section-hero-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Override legacy citizen-hero pseudo-elements so the new hero uses
+   its own real <img> background + purple overlay */
+.welcome-section-hero::before,
+.welcome-section-hero::after {
+  display: none !important;
+}
+
+.welcome-section-hero > * {
+  position: static;
+  z-index: auto;
+}
+
+/* ===== Inspiring Stories ===== */
+.stories-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.stories-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stories-eyebrow {
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  margin-bottom: 0.45rem;
+}
+
+.stories-header h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.stories-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #7c3aed;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  background: #fff;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.stories-view-all:hover {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(124, 58, 237, 0.14);
+}
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.story-card {
+  background: #ffffff;
+  border: 1px solid var(--gov-border);
+  border-radius: 1rem;
+  box-shadow: var(--gov-shadow-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 220ms ease, border-color 220ms ease, transform 220ms ease;
+}
+
+.story-card:hover {
+  border-color: #c4b5fd;
+  box-shadow: 0 14px 34px rgba(124, 58, 237, 0.14);
+}
+
+.story-image-wrap {
+  position: relative;
+  height: 168px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f5f3ff;
+}
+
+.story-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 260ms ease;
+}
+
+.story-card:hover .story-image {
+  transform: scale(1.04);
+}
+
+.story-icon {
+  position: absolute;
+  left: 1rem;
+  bottom: -1.15rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+  border: 3px solid #ffffff;
+  z-index: 2;
+}
+
+.story-body {
+  padding: 1.65rem 1.1rem 1.15rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.story-body h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.story-body p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.55;
+}
+
+/* SafeImage fallback */
+.safe-image-fallback {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  color: #7c3aed;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0.75rem;
+}
+
+.story-image-fallback {
+  height: 168px;
+}
+
+@media (max-width: 960px) {
+  .welcome-section-hero {
+    min-height: 320px;
+    padding: 2rem 1.6rem;
+  }
+
+  .stories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .welcome-section-hero {
+    min-height: 300px;
+    padding: 1.6rem 1.3rem;
+    border-radius: 20px;
+  }
+
+  .welcome-section-eyebrow {
+    font-size: 0.68rem;
+  }
+
+  .welcome-section-content h1 {
+    font-size: 1.6rem;
+  }
+
+  .welcome-section-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .welcome-section-cta {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stories-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .story-image-wrap,
+  .story-image-fallback {
+    height: 190px;
+  }
+}
+
 /* Citizen Quick Actions */
 .citizen-quick-actions {
   display: flex;
