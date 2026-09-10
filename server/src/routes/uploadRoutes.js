@@ -1,5 +1,6 @@
 const express = require("express");
 const { authenticateToken } = require("../middleware/authMiddleware");
+const { requireMinRole } = require("../middleware/roleMiddleware");
 const multer = require("multer");
 const {
   uploadImage,
@@ -26,8 +27,9 @@ const upload = multer({
   },
 });
 
-router.post("/upload", authenticateToken, upload.single("file"), uploadImage);
-router.delete("/upload/:publicId", authenticateToken, deleteImage);
-router.get("/media", authenticateToken, getMedia);
+// Upload routes - admin and staff only
+router.post("/upload", authenticateToken, requireMinRole("staff"), upload.single("file"), uploadImage);
+router.delete("/upload/:publicId", authenticateToken, requireMinRole("staff"), deleteImage);
+router.get("/media", authenticateToken, requireMinRole("staff"), getMedia);
 
 module.exports = router;

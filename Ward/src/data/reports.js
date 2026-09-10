@@ -93,7 +93,7 @@ export const recentReports = [
   },
   {
     id: 4,
-    name: "Staff Performance Review",
+    name: "staff perfomance review",
     category: "Staff",
     period: "Q2 2026",
     generatedBy: "Grace Njeri",
@@ -103,7 +103,7 @@ export const recentReports = [
   },
   {
     id: 5,
-    name: "Monthly Service Delivery Report",
+    name: "Monthly Service Daily Report",
     category: "Citizen Services",
     period: "Jun 2026",
     generatedBy: "David Ochieng",
@@ -113,7 +113,7 @@ export const recentReports = [
   },
   {
     id: 6,
-    name: "Ward Budget Utilization",
+    name: "Ward Budget Review",
     category: "Financial",
     period: "FY 2026/2027",
     generatedBy: "James Kariuki",

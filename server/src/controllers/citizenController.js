@@ -1,5 +1,10 @@
 const pool = require("../config/db");
 
+function normalizeStatus(status) {
+  if (!status) return status;
+  return String(status).replace(/\s+/g, "_");
+}
+
 // ============================================================
 // CITIZEN PROFILE
 // ============================================================
@@ -152,7 +157,7 @@ async function getCitizenComplaints(req, res) {
       citizenName: c.citizen_name,
       category: c.category,
       priority: c.priority,
-      status: c.status,
+      status: normalizeStatus(c.status),
       village: c.village,
       description: c.description,
       dateReported: c.date_reported,
@@ -226,7 +231,7 @@ async function getCitizenComplaintDetails(req, res) {
         phoneNumber: c.phone_number,
         category: c.category,
         priority: c.priority,
-        status: c.status,
+        status: normalizeStatus(c.status),
         village: c.village,
         description: c.description,
         officerNotes: c.officer_notes,
@@ -282,14 +287,51 @@ async function submitComplaint(req, res) {
 
     const { category, priority, description, village: complaintVillage } = req.body;
 
+    // Validate required fields
+    if (!category || !description) {
+      return res.status(400).json({ message: "Category and description are required." });
+    }
+
+    // Validate category against allowed values
+    const allowedCategories = [
+      "Road_Repair", "Water_Sanitation", "Health_Services", "Education",
+      "Security", "Land_Disputes", "Other"
+    ];
+    if (!allowedCategories.includes(category)) {
+      return res.status(400).json({ message: "Invalid complaint category." });
+    }
+
+    // Validate priority if provided
+    const allowedPriorities = ["Low", "Medium", "High", "Urgent"];
+    if (priority && !allowedPriorities.includes(priority)) {
+      return res.status(400).json({ message: "Invalid priority level." });
+    }
+
+    // Sanitize description to prevent XSS
+    function escapeHtml(text) {
+      const map = {
+        '&': '&',
+        '<': '<',
+        '>': '>',
+        '"': '"',
+        "'": '&#039;'
+      };
+      return String(text).replace(/[&<>"']/g, m => map[m]).trim();
+    }
+    const sanitizedDescription = escapeHtml(description);
+
+    if (sanitizedDescription.length < 10) {
+      return res.status(400).json({ message: "Description must be at least 10 characters." });
+    }
+
     const finalVillage = complaintVillage || village;
 
-    // Generate complaint code
-    const [codeRows] = await pool.execute(
-      `SELECT COUNT(*) AS count FROM complaints WHERE DATE(created_at) = CURDATE()`
+    // Generate complaint code using MAX(id) to avoid duplicates
+    const [maxIdRows] = await pool.execute(
+      `SELECT MAX(id) AS max_id FROM complaints`
     );
-    const todayCount = codeRows[0].count + 1;
-    const complaintCode = `CMP-${new Date().getFullYear()}-${String(todayCount).padStart(4, "0")}`;
+    const maxId = maxIdRows[0]?.max_id || 0;
+    const complaintCode = `CMP-${new Date().getFullYear()}-${String(maxId + 1).padStart(4, "0")}`;
 
     const [result] = await pool.execute(
       `INSERT INTO complaints (complaint_code, citizen_id, citizen_name, national_id, phone_number, category, priority, status, village, description, date_reported, last_updated)
@@ -312,6 +354,23 @@ async function submitComplaint(req, res) {
        VALUES (?, 'Complaint_Update', 'Complaint Submitted', ?, ?, 'complaint')`,
       [userId, `Your complaint ${complaintCode} has been submitted successfully.`, complaintId]
     );
+
+    // Create notifications for all admins
+    const [adminUsers] = await pool.execute(
+      `SELECT id FROM users WHERE role IN ('admin', 'super_admin') AND is_active = 1`
+    );
+
+    for (const admin of adminUsers) {
+      await pool.execute(
+        `INSERT INTO notifications (user_id, type, title, message, related_id, related_type)
+         VALUES (?, 'Complaint_Submitted', 'New Complaint Submitted', ?, ?, 'complaint')`,
+        [
+          admin.id,
+          `New complaint ${complaintCode} submitted by ${citizenName}. Category: ${category}.`,
+          complaintId,
+        ]
+      );
+    }
 
     return res.status(201).json({
       message: "Complaint submitted successfully.",
@@ -342,6 +401,34 @@ async function getWardProjects(req, res) {
       [userWard]
     );
 
+    // Fetch images for all projects in this ward
+    const projectNames = projects.map((p) => p.project_name);
+    let imagesByProject = {};
+
+    if (projectNames.length > 0) {
+      const placeholders = projectNames.map(() => "?").join(",");
+      const [images] = await pool.execute(
+        `SELECT project, image_url, title, description
+         FROM images
+         WHERE project IN (${placeholders})
+           AND status = 'active'
+         ORDER BY created_at DESC`,
+        projectNames
+      );
+
+      images.forEach((img) => {
+        const projectName = img.project;
+        if (!imagesByProject[projectName]) {
+          imagesByProject[projectName] = [];
+        }
+        imagesByProject[projectName].push({
+          url: img.image_url,
+          title: img.title,
+          description: img.description,
+        });
+      });
+    }
+
     const formatted = projects.map((p) => ({
       id: p.id,
       projectCode: p.project_code,
@@ -362,6 +449,7 @@ async function getWardProjects(req, res) {
       status: p.status,
       progress: p.progress,
       financialYear: p.financial_year,
+      images: imagesByProject[p.project_name] || [],
     }));
 
     return res.status(200).json({ projects: formatted });

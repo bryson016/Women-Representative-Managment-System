@@ -116,7 +116,7 @@ const staff = [
     performanceScore: 85,
     workload: 14,
     assignedTasks: 9,
-    villagesCovered: ["Kangemi", "Mountain View", "Parklands"],
+    villagesCovered: ["Kilgoris", "Narok North", "Narok South"],
     bio: "Manages water supply systems, sanitation services, and sewerage infrastructure.",
     certifications: ["Water Engineering", "Sanitation Management"],
     lastActive: "Today, 7:50 AM",

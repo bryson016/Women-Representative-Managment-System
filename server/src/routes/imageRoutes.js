@@ -1,5 +1,6 @@
 const express = require("express");
 const { authenticateToken } = require("../middleware/authMiddleware");
+const { requireMinRole } = require("../middleware/roleMiddleware");
 const multer = require("multer");
 const {
   uploadImages,
@@ -34,20 +35,20 @@ const upload = multer({
   },
 });
 
-// Image routes
-router.post("/images/upload", authenticateToken, upload.array("files", 20), uploadImages);
+// Image routes - read accessible to all authenticated users, write requires staff+
 router.get("/images", authenticateToken, getImages);
 router.get("/images/:id", authenticateToken, getImageById);
-router.put("/images/:id", authenticateToken, updateImage);
-router.delete("/images/:id", authenticateToken, deleteImage);
+router.post("/images/upload", authenticateToken, requireMinRole("staff"), upload.array("files", 20), uploadImages);
+router.put("/images/:id", authenticateToken, requireMinRole("staff"), updateImage);
+router.delete("/images/:id", authenticateToken, requireMinRole("staff"), deleteImage);
 
-// Category routes
+// Category routes - read accessible to all, write requires staff+
 router.get("/categories", authenticateToken, getCategories);
-router.post("/categories", authenticateToken, createCategory);
-router.put("/categories/:id", authenticateToken, updateCategory);
-router.delete("/categories/:id", authenticateToken, deleteCategory);
+router.post("/categories", authenticateToken, requireMinRole("staff"), createCategory);
+router.put("/categories/:id", authenticateToken, requireMinRole("staff"), updateCategory);
+router.delete("/categories/:id", authenticateToken, requireMinRole("staff"), deleteCategory);
 
-// Stats route
+// Stats route - accessible to all authenticated users
 router.get("/stats", authenticateToken, getImageStats);
 
 module.exports = router;

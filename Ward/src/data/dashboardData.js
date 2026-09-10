@@ -97,7 +97,7 @@ export const statCards = [
     id: "projects",
     title: "Development Projects",
     value: "18",
-    description: "Ongoing ward projects",
+    description: "Ongoing on Project",
     trend: "+2 new this month",
     icon: FolderKanban,
   },

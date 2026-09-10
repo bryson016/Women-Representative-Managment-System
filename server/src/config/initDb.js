@@ -27,6 +27,30 @@ async function runSettingsMigration(connection) {
   }
 }
 
+async function runNotificationsMigration(connection) {
+  try {
+    const [tables] = await connection.query(
+      "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME IN ('notifications')",
+      [process.env.DB_NAME]
+    );
+    const existingTables = tables.map((t) => t.TABLE_NAME);
+
+    if (!existingTables.includes("notifications")) {
+      console.log("Running notifications migration...");
+      const migrationSql = fs.readFileSync(
+        path.join(__dirname, "../../database/migrate_notifications.sql"),
+        "utf8"
+      );
+      await connection.query(migrationSql);
+      console.log("Notifications migration completed.");
+    } else {
+      console.log("Notifications table already exists.");
+    }
+  } catch (err) {
+    console.error("Notifications migration error:", err.message);
+  }
+}
+
 async function runBursaryMigration(connection) {
   try {
     // Select the database first
@@ -132,6 +156,9 @@ async function initDatabase() {
 
       // Run settings migration
       await runSettingsMigration(connection);
+
+      // Run notifications migration
+      await runNotificationsMigration(connection);
 
       // Run bursary migration
       await runBursaryMigration(connection);

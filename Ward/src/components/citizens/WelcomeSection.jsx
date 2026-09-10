@@ -11,7 +11,7 @@ import {
 import SafeImage from "../common/SafeImage";
 
 /* ---- Import existing project images (reused, no external URLs) ---- */
-import heroImg from "../../assets/emm.PNG.jpeg";
+import heroImg from "../../assets/sii.PNG.png";
 import educationImg from "../../assets/EM.PNG.png";
 import waterImg from "../../assets/community.PNG.jpg";
 import womenImg from "../../assets/women.PNG.png";
