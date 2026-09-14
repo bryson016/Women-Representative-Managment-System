@@ -14,6 +14,7 @@ const app = express();
 
 const allowedOrigins = [
   process.env.CLIENT_ORIGIN,
+  "https://women-representative-managment-system.onrender.com",
   "http://localhost:5173",
   "http://localhost:5174",
 ].filter(Boolean);

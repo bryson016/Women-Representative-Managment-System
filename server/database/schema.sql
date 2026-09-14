@@ -6,11 +6,11 @@
 -- Staff, Budget, and Reports modules.
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS ward_management
+CREATE DATABASE IF NOT EXISTS u428132275_womenrep
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE ward_management;
+USE u428132275_womenrep;
 
 -- ============================================================
 -- 1. CORE TABLES

@@ -4,7 +4,7 @@
 -- Adds tables for image management with categories.
 -- ============================================================
 
-USE ward_management;
+USE u428132275_womenrep;
 
 -- ------------------------------------------------------------
 -- image_categories: Categories for organizing images
